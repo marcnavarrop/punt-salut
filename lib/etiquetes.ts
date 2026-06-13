@@ -14,14 +14,25 @@ import type {
   SeveritatDeteccioIA,
   TipusDeteccioIA,
 } from "@/types";
+import { TRADUCCIONS, type Idioma } from "@/lib/i18n";
 
 export type { Evolucio };
 
-export const ESTAT_PACIENT_ETIQUETES: Record<EstatPacient, string> = {
-  actiu: "Actiu",
-  "alta temporal": "Alta temporal",
-  "fase aguda": "Fase aguda",
-};
+export function etiquetaEstatPacient(estat: EstatPacient, idioma: Idioma): string {
+  return TRADUCCIONS.etiquetes.estatPacient[estat][idioma];
+}
+
+export function etiquetaFase(fase: FasePacient, idioma: Idioma): string {
+  return TRADUCCIONS.etiquetes.fase[fase][idioma];
+}
+
+export function etiquetaEvolucio(evolucio: Evolucio, idioma: Idioma): string {
+  return TRADUCCIONS.etiquetes.evolucio[evolucio][idioma];
+}
+
+export function etiquetaDeteccio(tipus: TipusDeteccioIA, idioma: Idioma): string {
+  return TRADUCCIONS.etiquetes.deteccio[tipus][idioma];
+}
 
 export const ESTAT_PACIENT_ESTILS: Record<
   EstatPacient,
@@ -50,26 +61,12 @@ export const AVATAR_ESTILS: Record<EstatPacient, string> = {
   "fase aguda": "bg-brand-600",
 };
 
-export const FASE_ETIQUETES: Record<FasePacient, string> = {
-  agut: "Agut",
-  subagut: "Subagut",
-  cronic: "Crònic",
-};
-
 export const FASE_ESTILS: Record<FasePacient, string> = {
   agut: "rounded-md bg-rose-50 px-2 py-0.5 text-[11px] font-medium text-rose-700 ring-1 ring-rose-100",
   subagut:
     "rounded-md bg-sky-50 px-2 py-0.5 text-[11px] font-medium text-sky-700 ring-1 ring-sky-100",
   cronic:
     "rounded-md bg-amber-50 px-2 py-0.5 text-[11px] font-medium text-amber-700 ring-1 ring-amber-100",
-};
-
-export const TIPUS_DETECCIO_ETIQUETES: Record<TipusDeteccioIA, string> = {
-  kinesiofobia: "Kinesiofòbia",
-  catastrofitzacio: "Catastrofització",
-  milloraDetectada: "Millora detectada",
-  alertaClinica: "Alerta clínica",
-  suggeriment: "Suggeriment",
 };
 
 export const SEVERITAT_ESTILS: Record<SeveritatDeteccioIA, string> = {
@@ -82,12 +79,6 @@ export const SEVERITAT_ICONES: Record<SeveritatDeteccioIA, typeof IconInfoCircle
   info: IconInfoCircle,
   warning: IconAlertTriangle,
   alert: IconAlertOctagon,
-};
-
-export const EVOLUCIO_ETIQUETES: Record<Evolucio, string> = {
-  millora: "Millora",
-  estable: "Estable",
-  empitjora: "Empitjora",
 };
 
 export const EVOLUCIO_ESTILS: Record<Evolucio, string> = {

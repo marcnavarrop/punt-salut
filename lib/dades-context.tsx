@@ -82,6 +82,8 @@ interface DadesContextValor {
   pacients: Pacient[];
   sessions: Sessio[];
   afegirPacient: (dades: Omit<Pacient, "id">) => Pacient;
+  actualitzarPacient: (id: string, dades: Omit<Pacient, "id">) => void;
+  eliminarPacient: (id: string) => void;
   afegirSessio: (dades: Omit<Sessio, "id">) => Sessio;
   obtenirPacient: (id: string) => Pacient | undefined;
   obtenirSessio: (id: string) => Sessio | undefined;
@@ -101,6 +103,23 @@ export function DadesProvider({ children }: { children: ReactNode }) {
     const nou: Pacient = { ...dades, id: crypto.randomUUID() };
     actualitzarEstat({ ...estat, pacients: [...estat.pacients, nou] });
     return nou;
+  }
+
+  function actualitzarPacient(id: string, dades: Omit<Pacient, "id">) {
+    actualitzarEstat({
+      ...estat,
+      pacients: estat.pacients.map((pacient) =>
+        pacient.id === id ? { ...dades, id } : pacient
+      ),
+    });
+  }
+
+  function eliminarPacient(id: string) {
+    actualitzarEstat({
+      ...estat,
+      pacients: estat.pacients.filter((pacient) => pacient.id !== id),
+      sessions: estat.sessions.filter((sessio) => sessio.pacientId !== id),
+    });
   }
 
   function afegirSessio(dades: Omit<Sessio, "id">): Sessio {
@@ -129,6 +148,8 @@ export function DadesProvider({ children }: { children: ReactNode }) {
         pacients: estat.pacients,
         sessions: estat.sessions,
         afegirPacient,
+        actualitzarPacient,
+        eliminarPacient,
         afegirSessio,
         obtenirPacient,
         obtenirSessio,

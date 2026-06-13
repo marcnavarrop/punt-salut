@@ -1,7 +1,8 @@
 "use client";
 
-import { use } from "react";
+import { use, useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   IconActivity,
   IconAlertTriangle,
@@ -9,7 +10,9 @@ import {
   IconCalendar,
   IconMail,
   IconMicrophone,
+  IconPencil,
   IconPhone,
+  IconTrash,
   IconUser,
   IconUserCheck,
 } from "@tabler/icons-react";
@@ -19,13 +22,16 @@ import { useDades } from "@/lib/dades-context";
 import { calcularEdat, formatData } from "@/lib/data-utils";
 import {
   ESTAT_PACIENT_ESTILS,
-  ESTAT_PACIENT_ETIQUETES,
   EVOLUCIO_ESTILS,
-  EVOLUCIO_ETIQUETES,
   EVOLUCIO_ICONES,
   FASE_ESTILS,
-  FASE_ETIQUETES,
+  etiquetaEstatPacient,
+  etiquetaEvolucio,
+  etiquetaFase,
 } from "@/lib/etiquetes";
+import { useIdioma } from "@/lib/i18n-context";
+import { ModalConfirmacio } from "@/components/ModalConfirmacio";
+import { FormulariPacient } from "../FormulariPacient";
 
 export default function PacientPage({
   params,
@@ -33,8 +39,13 @@ export default function PacientPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const router = useRouter();
+  const { idioma, t } = useIdioma();
   const { sessio, carregat } = useRequereSessio();
-  const { obtenirPacient, obtenirSessionsPacient } = useDades();
+  const { obtenirPacient, obtenirSessionsPacient, actualitzarPacient, eliminarPacient } =
+    useDades();
+  const [mostrarEditar, setMostrarEditar] = useState(false);
+  const [mostrarEliminar, setMostrarEliminar] = useState(false);
 
   const pacient = obtenirPacient(id);
   const sessions = obtenirSessionsPacient(id);
@@ -46,13 +57,15 @@ export default function PacientPage({
   if (!pacient) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50/40">
-        <p className="text-[14px] text-slate-500">Pacient no trobat.</p>
+        <p className="text-[14px] text-slate-500">
+          {t("pacientDetall.pacientNoTrobat")}
+        </p>
         <Link
           href="/pacients"
           className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
         >
           <IconArrowLeft className="h-4 w-4" />
-          Tornar a pacients
+          {t("pacientDetall.tornarAPacients")}
         </Link>
       </div>
     );
@@ -75,15 +88,33 @@ export default function PacientPage({
           className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
         >
           <IconArrowLeft className="h-4 w-4" />
-          Tornar a pacients
+          {t("pacientDetall.tornarAPacients")}
         </Link>
-        <Link
-          href={`/sessio/${id}`}
-          className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
-        >
-          <IconMicrophone className="h-[15px] w-[15px]" />
-          Nova sessió
-        </Link>
+        <div className="flex items-center gap-2">
+          <button
+            type="button"
+            onClick={() => setMostrarEditar(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-3.5 py-2 text-[13px] font-medium text-slate-600 transition hover:bg-slate-50"
+          >
+            <IconPencil className="h-[15px] w-[15px]" />
+            {t("pacientDetall.editar")}
+          </button>
+          <button
+            type="button"
+            onClick={() => setMostrarEliminar(true)}
+            className="inline-flex items-center gap-1.5 rounded-lg border border-red-100 px-3.5 py-2 text-[13px] font-medium text-red-600 transition hover:bg-red-50"
+          >
+            <IconTrash className="h-[15px] w-[15px]" />
+            {t("pacientDetall.eliminarPacient")}
+          </button>
+          <Link
+            href={`/sessio/${id}`}
+            className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
+          >
+            <IconMicrophone className="h-[15px] w-[15px]" />
+            {t("pacientDetall.novaSessio")}
+          </Link>
+        </div>
       </div>
 
       <main className="mx-auto max-w-5xl px-7 py-6">
@@ -100,20 +131,20 @@ export default function PacientPage({
                 </h1>
                 <span className={ESTAT_PACIENT_ESTILS[pacient.estat].badge}>
                   <span className={ESTAT_PACIENT_ESTILS[pacient.estat].dot} />
-                  {ESTAT_PACIENT_ETIQUETES[pacient.estat]}
+                  {etiquetaEstatPacient(pacient.estat, idioma)}
                 </span>
                 <span className={FASE_ESTILS[pacient.fase]}>
-                  {FASE_ETIQUETES[pacient.fase]}
+                  {etiquetaFase(pacient.fase, idioma)}
                 </span>
                 {kinesiofobiaDetectada && (
                   <span className="inline-flex items-center gap-1 rounded-md bg-orange-50 px-2 py-0.5 text-[11px] font-medium text-orange-700 ring-1 ring-orange-100">
                     <IconAlertTriangle className="h-3 w-3" />
-                    Kinesiofòbia detectada
+                    {t("pacientDetall.kinesiofobiaDetectada")}
                   </span>
                 )}
               </div>
               <p className="mt-1 text-[13px] text-slate-500 tabular-nums">
-                {edat} anys · {pacient.diagnostic}
+                {edat} {t("comu.anys")} · {pacient.diagnostic}
               </p>
               <div className="mt-3.5 flex flex-wrap items-center gap-x-6 gap-y-2 text-[13px] text-slate-600">
                 <span className="inline-flex items-center gap-1.5">
@@ -130,7 +161,7 @@ export default function PacientPage({
                 </span>
                 <span className="inline-flex items-center gap-1.5">
                   <IconCalendar className="h-[15px] w-[15px] text-slate-400" />
-                  Pacient des de {formatData(pacient.dataInici)}
+                  {t("pacientDetall.pacientDesDe")} {formatData(pacient.dataInici)}
                 </span>
               </div>
             </div>
@@ -143,30 +174,30 @@ export default function PacientPage({
             <div className="mb-4 flex items-center gap-2">
               <IconUser className="h-4 w-4 text-slate-400" />
               <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-                Dades personals
+                {t("pacientDetall.dadesPersonals")}
               </h2>
             </div>
             <dl className="divide-y divide-slate-100 text-[13px]">
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Data de naixement</dt>
+                <dt className="text-slate-500">{t("comu.dataNaixement")}</dt>
                 <dd className="font-medium text-slate-800 tabular-nums">
                   {formatData(pacient.dataNaixement)}
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Telèfon</dt>
+                <dt className="text-slate-500">{t("comu.telefon")}</dt>
                 <dd className="font-medium text-slate-800 tabular-nums">
                   {pacient.telefon}
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Email</dt>
+                <dt className="text-slate-500">{t("comu.email")}</dt>
                 <dd className="font-medium text-slate-800">
                   {pacient.email}
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Diagnòstic</dt>
+                <dt className="text-slate-500">{t("pacientDetall.diagnostic")}</dt>
                 <dd className="font-medium text-slate-800">
                   {pacient.diagnostic}
                 </dd>
@@ -178,12 +209,12 @@ export default function PacientPage({
             <div className="mb-4 flex items-center gap-2">
               <IconActivity className="h-4 w-4 text-brand-500" />
               <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-                Resum clínic
+                {t("pacientDetall.resumClinic")}
               </h2>
             </div>
             <dl className="divide-y divide-slate-100 text-[13px]">
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">EVA actual</dt>
+                <dt className="text-slate-500">{t("pacientDetall.evaActual")}</dt>
                 <dd className="inline-flex items-center gap-2">
                   {ultimaSessio ? (
                     <>
@@ -203,23 +234,23 @@ export default function PacientPage({
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Última sessió</dt>
+                <dt className="text-slate-500">{t("pacientDetall.ultimaSessio")}</dt>
                 <dd className="font-medium text-slate-800 tabular-nums">
                   {ultimaSessio ? formatData(ultimaSessio.data) : "—"}
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Propera sessió</dt>
+                <dt className="text-slate-500">{t("pacientDetall.properaSessio")}</dt>
                 <dd className="font-medium text-slate-800 tabular-nums">
                   {pacient.properaSessio
                     ? formatData(pacient.properaSessio)
-                    : "Pendent de programar"}
+                    : t("pacientDetall.pendentProgramar")}
                 </dd>
               </div>
               <div className="flex items-center justify-between py-2.5">
-                <dt className="text-slate-500">Freqüència</dt>
+                <dt className="text-slate-500">{t("pacientDetall.frequencia")}</dt>
                 <dd className="font-medium text-slate-800">
-                  {pacient.frequencia ?? "Pendent de definir"}
+                  {pacient.frequencia ?? t("pacientDetall.pendentDefinir")}
                 </dd>
               </div>
             </dl>
@@ -230,15 +261,15 @@ export default function PacientPage({
         <div className="mt-6">
           <div className="mb-3 flex items-center justify-between">
             <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-              Historial de sessions
+              {t("pacientDetall.historialSessions")}
             </h2>
             <span className="text-[12px] text-slate-400 tabular-nums">
-              {sessions.length} sessions
+              {sessions.length} {t("pacientDetall.sessions")}
             </span>
           </div>
           {sessions.length === 0 ? (
             <p className="rounded-xl border border-dashed border-slate-200 bg-white/60 px-4 py-6 text-center text-[13px] text-slate-400">
-              Encara no hi ha sessions registrades per a aquest pacient.
+              {t("pacientDetall.capSessio")}
             </p>
           ) : (
             <div className="space-y-2.5">
@@ -260,7 +291,7 @@ export default function PacientPage({
                           </span>
                           <span className="text-slate-300">·</span>
                           <span className="font-medium text-slate-500">
-                            Sessió {sessio.numero}
+                            {t("pacientDetall.sessioNum")} {sessio.numero}
                           </span>
                         </div>
                         <p className="mt-1.5 text-[14px] font-medium text-slate-900">
@@ -288,12 +319,12 @@ export default function PacientPage({
                         </span>
                         {esInicial ? (
                           <span className="inline-flex items-center gap-1 rounded-md bg-slate-100 px-2 py-0.5 text-[11px] font-medium text-slate-500">
-                            Inicial
+                            {t("pacientDetall.inicial")}
                           </span>
                         ) : (
                           <span className={EVOLUCIO_ESTILS[sessio.evolucio]}>
                             <IconEvolucio className="h-3 w-3" />
-                            {EVOLUCIO_ETIQUETES[sessio.evolucio]}
+                            {etiquetaEvolucio(sessio.evolucio, idioma)}
                           </span>
                         )}
                       </div>
@@ -305,6 +336,33 @@ export default function PacientPage({
           )}
         </div>
       </main>
+
+      {mostrarEditar && (
+        <FormulariPacient
+          titol={t("formulariPacient.editarPacientTitol")}
+          etiquetaBoto={t("comu.desarCanvis")}
+          valorsInicials={pacient}
+          onTancar={() => setMostrarEditar(false)}
+          onDesar={(dades) => {
+            actualitzarPacient(id, dades);
+            setMostrarEditar(false);
+          }}
+        />
+      )}
+
+      {mostrarEliminar && (
+        <ModalConfirmacio
+          titol={t("pacientDetall.confirmarEliminarTitol")}
+          missatge={t("pacientDetall.confirmarEliminarMissatge", { nom: nomComplet })}
+          etiquetaConfirmar={t("comu.eliminar")}
+          etiquetaCancelar={t("comu.cancelar")}
+          onCancelar={() => setMostrarEliminar(false)}
+          onConfirmar={() => {
+            eliminarPacient(id);
+            router.push("/pacients");
+          }}
+        />
+      )}
     </div>
   );
 }

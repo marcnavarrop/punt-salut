@@ -4,6 +4,7 @@ import { useState, type FormEvent } from "react";
 import { useRouter } from "next/navigation";
 import { IconActivity, IconAlertCircle, IconLock, IconMail } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth-context";
+import { useIdioma } from "@/lib/i18n-context";
 
 const ESTIL_CAMP =
   "mt-1 w-full rounded-lg border border-slate-200 bg-white px-3 py-2 pl-9 text-[13px] text-slate-700 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/15";
@@ -12,6 +13,7 @@ const ESTIL_ETIQUETA = "text-[12px] font-medium text-slate-500";
 
 export default function LoginPage() {
   const router = useRouter();
+  const { t } = useIdioma();
   const { iniciarSessio } = useAuth();
   const [email, setEmail] = useState("");
   const [contrasenya, setContrasenya] = useState("");
@@ -24,7 +26,7 @@ export default function LoginPage() {
       setError("");
       router.replace("/pacients");
     } else {
-      setError("Email o contrasenya incorrectes.");
+      setError(t("login.errorCredencials"));
     }
   }
 
@@ -39,21 +41,21 @@ export default function LoginPage() {
             <p className="text-[17px] font-semibold tracking-tight text-slate-900">
               Punt Salut Montseny
             </p>
-            <p className="text-[13px] text-slate-400">Assistent clínic</p>
+            <p className="text-[13px] text-slate-400">{t("login.assistentClinic")}</p>
           </div>
         </div>
 
         <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h1 className="text-[15px] font-semibold tracking-tight text-slate-900">
-            Inicia sessió
+            {t("login.iniciaSessio")}
           </h1>
           <p className="mt-1 text-[13px] text-slate-500">
-            Accedeix amb el teu compte de professional.
+            {t("login.accedeix")}
           </p>
 
           <form onSubmit={gestionarEnviament} className="mt-4 space-y-3">
             <div>
-              <label className={ESTIL_ETIQUETA}>Email</label>
+              <label className={ESTIL_ETIQUETA}>{t("comu.email")}</label>
               <div className="relative">
                 <IconMail className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
@@ -69,7 +71,7 @@ export default function LoginPage() {
             </div>
 
             <div>
-              <label className={ESTIL_ETIQUETA}>Contrasenya</label>
+              <label className={ESTIL_ETIQUETA}>{t("login.contrasenya")}</label>
               <div className="relative">
                 <IconLock className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
                 <input
@@ -95,7 +97,7 @@ export default function LoginPage() {
               type="submit"
               className="mt-2 w-full rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
             >
-              Entrar
+              {t("login.entrar")}
             </button>
           </form>
         </div>

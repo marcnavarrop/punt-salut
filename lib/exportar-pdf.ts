@@ -1,14 +1,19 @@
 import { jsPDF } from "jspdf";
 import type { Pacient, Sessio } from "@/types";
 import { formatData } from "@/lib/data-utils";
-import { EVOLUCIO_ETIQUETES, TIPUS_DETECCIO_ETIQUETES } from "@/lib/etiquetes";
+import { etiquetaDeteccio, etiquetaEvolucio } from "@/lib/etiquetes";
+import type { Idioma } from "@/lib/i18n";
 
 const MARGE = 14;
 const AMPLADA_PAGINA = 210;
 const ALCADA_PAGINA = 297;
 const AMPLADA_TEXT = AMPLADA_PAGINA - MARGE * 2;
 
-export function exportarSessioPDF(pacient: Pacient, sessio: Sessio): void {
+export function exportarSessioPDF(
+  pacient: Pacient,
+  sessio: Sessio,
+  idioma: Idioma
+): void {
   const doc = new jsPDF();
   let y = 20;
 
@@ -74,7 +79,7 @@ export function exportarSessioPDF(pacient: Pacient, sessio: Sessio): void {
   doc.text(`Professional: ${pacient.profesionalAssignat}`, MARGE, y);
   saltarLinia(6);
   doc.text(
-    `EVA: ${sessio.eva}/10  ·  Evolució: ${EVOLUCIO_ETIQUETES[sessio.evolucio]}`,
+    `EVA: ${sessio.eva}/10  ·  Evolució: ${etiquetaEvolucio(sessio.evolucio, idioma)}`,
     MARGE,
     y
   );
@@ -103,7 +108,7 @@ export function exportarSessioPDF(pacient: Pacient, sessio: Sessio): void {
     afegirTitol("Deteccions de la IA");
     sessio.deteccionsIA.forEach((deteccio) => {
       afegirParagraf(
-        TIPUS_DETECCIO_ETIQUETES[deteccio.tipus],
+        etiquetaDeteccio(deteccio.tipus, idioma),
         deteccio.descripcio
       );
     });

@@ -15,12 +15,13 @@ import { formatData } from "@/lib/data-utils";
 import { exportarSessioPDF } from "@/lib/exportar-pdf";
 import {
   EVOLUCIO_ESTILS,
-  EVOLUCIO_ETIQUETES,
   EVOLUCIO_ICONES,
   SEVERITAT_ESTILS,
   SEVERITAT_ICONES,
-  TIPUS_DETECCIO_ETIQUETES,
+  etiquetaDeteccio,
+  etiquetaEvolucio,
 } from "@/lib/etiquetes";
+import { useIdioma } from "@/lib/i18n-context";
 
 export default function DetallSessioPage({
   params,
@@ -28,6 +29,7 @@ export default function DetallSessioPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { idioma, t } = useIdioma();
   const { obtenirSessio, obtenirPacient } = useDades();
 
   const sessio = obtenirSessio(id);
@@ -36,13 +38,13 @@ export default function DetallSessioPage({
   if (!sessio || !pacient) {
     return (
       <div className="flex min-h-screen flex-col items-center justify-center gap-3 bg-slate-50/40">
-        <p className="text-[14px] text-slate-500">Sessió no trobada.</p>
+        <p className="text-[14px] text-slate-500">{t("sessioDetall.sessioNoTrobada")}</p>
         <Link
           href="/pacients"
           className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
         >
           <IconArrowLeft className="h-4 w-4" />
-          Tornar a pacients
+          {t("pacientDetall.tornarAPacients")}
         </Link>
       </div>
     );
@@ -61,15 +63,15 @@ export default function DetallSessioPage({
           className="inline-flex items-center gap-1.5 rounded-lg px-2.5 py-1.5 text-[13px] font-medium text-slate-500 transition hover:bg-slate-100 hover:text-slate-800"
         >
           <IconArrowLeft className="h-4 w-4" />
-          Tornar a la fitxa
+          {t("sessio.tornarFitxa")}
         </Link>
         <button
           type="button"
-          onClick={() => exportarSessioPDF(pacient, sessio)}
+          onClick={() => exportarSessioPDF(pacient, sessio, idioma)}
           className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
         >
           <IconFileDownload className="h-[15px] w-[15px]" />
-          Exportar PDF
+          {t("sessioDetall.exportarPdf")}
         </button>
       </div>
 
@@ -98,7 +100,7 @@ export default function DetallSessioPage({
               </span>
               <span className={EVOLUCIO_ESTILS[sessio.evolucio]}>
                 <IconEvolucio className="h-3 w-3" />
-                {EVOLUCIO_ETIQUETES[sessio.evolucio]}
+                {etiquetaEvolucio(sessio.evolucio, idioma)}
               </span>
             </div>
           </div>
@@ -108,26 +110,26 @@ export default function DetallSessioPage({
         {sessio.resumEstructurat && (
           <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-              Resum estructurat
+              {t("comu.resumEstructurat")}
             </h2>
             <dl className="mt-3 space-y-3 text-[13px]">
               <div>
                 <dt className="font-medium text-slate-900">
-                  Motiu de consulta
+                  {t("comu.motiuConsulta")}
                 </dt>
                 <dd className="mt-0.5 text-slate-600">
                   {sessio.resumEstructurat.motivConsulta}
                 </dd>
               </div>
               <div>
-                <dt className="font-medium text-slate-900">Dolor</dt>
+                <dt className="font-medium text-slate-900">{t("comu.dolor")}</dt>
                 <dd className="mt-0.5 text-slate-600">
                   {sessio.resumEstructurat.dolor}
                 </dd>
               </div>
               <div>
                 <dt className="font-medium text-slate-900">
-                  Aspecte emocional
+                  {t("comu.aspecteEmocional")}
                 </dt>
                 <dd className="mt-0.5 text-slate-600">
                   {sessio.resumEstructurat.aspecteEmocional}
@@ -135,14 +137,14 @@ export default function DetallSessioPage({
               </div>
               <div>
                 <dt className="font-medium text-slate-900">
-                  Valoració funcional
+                  {t("comu.valoracioFuncional")}
                 </dt>
                 <dd className="mt-0.5 text-slate-600">
                   {sessio.resumEstructurat.valoracioFuncional}
                 </dd>
               </div>
               <div>
-                <dt className="font-medium text-red-700">Pendents</dt>
+                <dt className="font-medium text-red-700">{t("comu.pendents")}</dt>
                 <dd className="mt-0.5">
                   <ul className="list-inside list-disc space-y-1 text-red-600">
                     {sessio.resumEstructurat.pendents.map((pendent, index) => (
@@ -159,7 +161,7 @@ export default function DetallSessioPage({
         {sessio.deteccionsIA && sessio.deteccionsIA.length > 0 && (
           <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
             <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-              Deteccions de la IA
+              {t("sessioDetall.deteccionsIA")}
             </h2>
             <ul className="mt-3 space-y-3">
               {sessio.deteccionsIA.map((deteccio, index) => {
@@ -175,7 +177,7 @@ export default function DetallSessioPage({
                       <span
                         className={`inline-flex rounded-full px-2.5 py-0.5 text-[11px] font-medium ${SEVERITAT_ESTILS[deteccio.severitat]}`}
                       >
-                        {TIPUS_DETECCIO_ETIQUETES[deteccio.tipus]}
+                        {etiquetaDeteccio(deteccio.tipus, idioma)}
                       </span>
                       <p className="mt-1 text-[13px] text-slate-600">
                         {deteccio.descripcio}
@@ -192,11 +194,11 @@ export default function DetallSessioPage({
         <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
           <h2 className="flex items-center gap-2 text-[14px] font-semibold tracking-tight text-slate-900">
             <IconNotes className="h-4 w-4 text-slate-400" />
-            Transcripció completa
+            {t("sessioDetall.transcripcioCompleta")}
           </h2>
           {liniesTranscripcio.length === 0 ? (
             <p className="mt-3 text-[13px] text-slate-400">
-              No hi ha transcripció disponible per a aquesta sessió.
+              {t("sessioDetall.capTranscripcio")}
             </p>
           ) : (
             <div className="mt-3 space-y-2 rounded-lg border border-slate-200 bg-slate-50 p-4 text-[13px] text-slate-700">
@@ -220,7 +222,7 @@ export default function DetallSessioPage({
             className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 bg-white px-3.5 py-2 text-[13px] font-medium text-slate-700 shadow-sm transition hover:bg-slate-50"
           >
             <IconArrowLeft className="h-4 w-4" />
-            Tornar a la fitxa
+            {t("sessio.tornarFitxa")}
           </Link>
         </div>
       </main>
