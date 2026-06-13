@@ -2,8 +2,10 @@
 
 import { useState } from "react";
 import Link from "next/link";
+import { useRouter } from "next/navigation";
 import {
   IconActivity,
+  IconLogout,
   IconPlus,
   IconSearch,
   IconSettings,
@@ -17,6 +19,7 @@ import {
   FASE_ESTILS,
 } from "@/lib/etiquetes";
 import { calcularEdat } from "@/lib/data-utils";
+import { useAuth } from "@/lib/auth-context";
 import { useDades } from "@/lib/dades-context";
 import { FormulariNouPacient } from "./FormulariNouPacient";
 
@@ -26,8 +29,15 @@ function inicials(nom: string, cognoms: string): string {
 
 export default function PacientsPage() {
   const { pacients, afegirPacient } = useDades();
+  const { sessio, tancarSessio } = useAuth();
+  const router = useRouter();
   const [cerca, setCerca] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
+
+  function gestionarTancarSessio() {
+    tancarSessio();
+    router.replace("/login");
+  }
 
   const cercaNormalitzada = cerca.trim().toLowerCase();
   const pacientsFiltrats = pacients.filter((pacient) => {
@@ -67,17 +77,25 @@ export default function PacientsPage() {
 
         {/* User chip */}
         <div className="mt-auto m-3 flex items-center gap-2.5 rounded-lg border border-slate-200 bg-white px-3 py-2.5">
-          <div className="grid h-8 w-8 place-items-center rounded-full bg-slate-800 text-xs font-semibold text-white">
-            MS
+          <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-slate-800 text-xs font-semibold text-white">
+            {sessio ? `${sessio.nom[0]}${sessio.cognoms[0]}` : ""}
           </div>
-          <div className="min-w-0 leading-tight">
+          <div className="min-w-0 flex-1 leading-tight">
             <p className="truncate text-[13px] font-medium text-slate-800">
-              Marc Soler
+              {sessio ? `${sessio.nom} ${sessio.cognoms}` : ""}
             </p>
             <p className="truncate text-[11px] text-slate-400">
-              Fisioterapeuta
+              {sessio?.especialitat}
             </p>
           </div>
+          <button
+            type="button"
+            onClick={gestionarTancarSessio}
+            title="Tancar sessió"
+            className="grid h-7 w-7 shrink-0 place-items-center rounded-md text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
+          >
+            <IconLogout className="h-[15px] w-[15px]" />
+          </button>
         </div>
       </aside>
 
