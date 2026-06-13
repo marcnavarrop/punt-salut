@@ -39,7 +39,7 @@ export default function LoginPage() {
           </div>
           <div className="text-center">
             <p className="text-[17px] font-semibold tracking-tight text-slate-900">
-              Punt Salut Montseny
+              Voltamed
             </p>
             <p className="text-[13px] text-slate-400">{t("login.assistentClinic")}</p>
           </div>

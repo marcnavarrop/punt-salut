@@ -13,7 +13,7 @@ const inter = Inter({
 });
 
 export const metadata: Metadata = {
-  title: "Punt Salut Montseny",
+  title: "Voltamed",
   description: "Assistent clínic per a fisioteràpia",
 };
 

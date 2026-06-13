@@ -51,7 +51,7 @@ export function exportarSessioPDF(
   doc.setFont("helvetica", "bold");
   doc.setFontSize(18);
   doc.setTextColor(22, 163, 74);
-  doc.text("Punt Salut Montseny", MARGE, y);
+  doc.text("Voltamed", MARGE, y);
   saltarLinia(8);
 
   doc.setFont("helvetica", "normal");
