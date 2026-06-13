@@ -13,6 +13,8 @@ import {
   IconUser,
   IconUserCheck,
 } from "@tabler/icons-react";
+import { useRequereSessio } from "@/lib/auth-context";
+import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
 import { calcularEdat, formatData } from "@/lib/data-utils";
 import {
@@ -31,10 +33,15 @@ export default function PacientPage({
   params: Promise<{ id: string }>;
 }) {
   const { id } = use(params);
+  const { sessio, carregat } = useRequereSessio();
   const { obtenirPacient, obtenirSessionsPacient } = useDades();
 
   const pacient = obtenirPacient(id);
   const sessions = obtenirSessionsPacient(id);
+
+  if (!carregat || !sessio) {
+    return <CarregantSessio />;
+  }
 
   if (!pacient) {
     return (

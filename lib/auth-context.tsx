@@ -3,9 +3,11 @@
 import {
   createContext,
   useContext,
+  useEffect,
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import { useRouter } from "next/navigation";
 import type { Professional } from "@/types";
 
 const CLAU_SESSIO = "puntsalut.sessio";
@@ -133,4 +135,23 @@ export function useAuth(): AuthContextValor {
     throw new Error("useAuth s'ha d'utilitzar dins de <AuthProvider>");
   }
   return context;
+}
+
+/**
+ * Comprova al client si hi ha una sessió activa a localStorage.
+ * Si no n'hi ha, redirigeix a /login. Cal cridar-lo des de pàgines
+ * protegides ("use client").
+ */
+export function useRequereSessio(): AuthContextValor {
+  const auth = useAuth();
+  const router = useRouter();
+  const { sessio, carregat } = auth;
+
+  useEffect(() => {
+    if (carregat && !sessio) {
+      router.replace("/login");
+    }
+  }, [carregat, sessio, router]);
+
+  return auth;
 }

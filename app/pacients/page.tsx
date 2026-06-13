@@ -19,7 +19,8 @@ import {
   FASE_ESTILS,
 } from "@/lib/etiquetes";
 import { calcularEdat } from "@/lib/data-utils";
-import { useAuth } from "@/lib/auth-context";
+import { useRequereSessio } from "@/lib/auth-context";
+import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
 import { FormulariNouPacient } from "./FormulariNouPacient";
 
@@ -29,7 +30,7 @@ function inicials(nom: string, cognoms: string): string {
 
 export default function PacientsPage() {
   const { pacients, afegirPacient } = useDades();
-  const { sessio, tancarSessio } = useAuth();
+  const { sessio, carregat, tancarSessio } = useRequereSessio();
   const router = useRouter();
   const [cerca, setCerca] = useState("");
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -37,6 +38,10 @@ export default function PacientsPage() {
   function gestionarTancarSessio() {
     tancarSessio();
     router.replace("/login");
+  }
+
+  if (!carregat || !sessio) {
+    return <CarregantSessio />;
   }
 
   const cercaNormalitzada = cerca.trim().toLowerCase();

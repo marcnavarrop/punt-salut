@@ -20,6 +20,8 @@ import {
   type AnalisiTranscripcio,
 } from "@/lib/ai-simulada";
 import { SEVERITAT_ESTILS, SEVERITAT_ICONES, TIPUS_DETECCIO_ETIQUETES } from "@/lib/etiquetes";
+import { useRequereSessio } from "@/lib/auth-context";
+import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
 import { dataAvui } from "@/lib/data-utils";
 
@@ -51,6 +53,7 @@ export default function SessioPage({
 }) {
   const { id } = use(params);
   const router = useRouter();
+  const { sessio, carregat } = useRequereSessio();
   const { obtenirPacient, obtenirSessionsPacient, afegirSessio } = useDades();
 
   const pacient = obtenirPacient(id);
@@ -143,6 +146,10 @@ export default function SessioPage({
       deteccionsIA: analisi.deteccionsIA,
     });
     router.push(`/pacients/${id}`);
+  }
+
+  if (!carregat || !sessio) {
+    return <CarregantSessio />;
   }
 
   return (
