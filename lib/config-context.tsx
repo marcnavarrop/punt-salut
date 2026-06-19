@@ -56,17 +56,30 @@ function desar(config: Config) {
   }
 }
 
+function migrarCentreIdProfessional(professional: Professional): Professional {
+  if (professional.centreId) return professional;
+  const referencia = CONFIG_INICIAL.professionals.find(
+    (p) => p.id === professional.id
+  );
+  return {
+    ...professional,
+    centreId: referencia?.centreId ?? "punt-salut-montseny",
+  };
+}
+
 function carregarConfigClient(): Config {
   if (configClient) return configClient;
   try {
     const desada = localStorage.getItem(CLAU_CONFIG);
-    configClient = desada ? JSON.parse(desada) : CONFIG_INICIAL;
+    const config: Config = desada ? JSON.parse(desada) : CONFIG_INICIAL;
+    configClient = {
+      ...config,
+      professionals: config.professionals.map(migrarCentreIdProfessional),
+    };
   } catch {
     configClient = CONFIG_INICIAL;
   }
-  if (!localStorage.getItem(CLAU_CONFIG)) {
-    desar(configClient!);
-  }
+  desar(configClient!);
   return configClient!;
 }
 
