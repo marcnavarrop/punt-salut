@@ -19,6 +19,7 @@ import { ModalConfirmacio } from "@/components/ModalConfirmacio";
 import type { Professional } from "@/types";
 import { FormulariProfessional } from "./FormulariProfessional";
 import { DadesCentre } from "./DadesCentre";
+import { PerfilProfessional } from "./PerfilProfessional";
 
 export default function ConfiguracioPage() {
   const { t } = useIdioma();
@@ -47,6 +48,9 @@ export default function ConfiguracioPage() {
   const professionalsCentre = professionals.filter(
     (professional) => professional.centreId === sessio.centreId
   );
+  const perfilPropi =
+    professionals.find((professional) => professional.id === sessio.id) ??
+    sessio;
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -68,6 +72,11 @@ export default function ConfiguracioPage() {
         <div className="flex-1 bg-slate-50/40 px-4 py-5 sm:px-7 sm:py-6">
           {/* Dades del centre */}
           {centre && <DadesCentre centre={centre} />}
+
+          {/* El meu perfil */}
+          <div className="mt-4">
+            <PerfilProfessional professional={perfilPropi} />
+          </div>
 
           {/* Professionals */}
           <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">

@@ -120,6 +120,35 @@ export const TRADUCCIONS = {
       ca: "Ex: Dilluns a Divendres, 9h-20h",
       es: "Ej: Lunes a Viernes, 9h-20h",
     },
+    elMeuPerfil: { ca: "El meu perfil", es: "Mi perfil" },
+    fotoPerfil: { ca: "Foto de perfil", es: "Foto de perfil" },
+    pujarFoto: { ca: "Pujar foto", es: "Subir foto" },
+    fotoMassaGran: {
+      ca: "La imatge no pot superar els 2 MB.",
+      es: "La imagen no puede superar los 2 MB.",
+    },
+    canvisDesats: { ca: "Canvis desats", es: "Cambios guardados" },
+    canviarContrasenya: { ca: "Canviar contrasenya", es: "Cambiar contraseña" },
+    confirmarContrasenya: {
+      ca: "Confirma la contrasenya",
+      es: "Confirma la contraseña",
+    },
+    contrasenyaMassaCurta: {
+      ca: "La contrasenya ha de tenir com a mínim 4 caràcters.",
+      es: "La contraseña debe tener al menos 4 caracteres.",
+    },
+    contrasenyesNoCoincideixen: {
+      ca: "Les contrasenyes no coincideixen.",
+      es: "Las contraseñas no coinciden.",
+    },
+    actualitzarContrasenya: {
+      ca: "Actualitzar contrasenya",
+      es: "Actualizar contraseña",
+    },
+    contrasenyaActualitzada: {
+      ca: "Contrasenya actualitzada",
+      es: "Contraseña actualizada",
+    },
     professionals: { ca: "Professionals", es: "Profesionales" },
     nouProfessional: { ca: "Nou professional", es: "Nuevo profesional" },
     editarProfessional: {

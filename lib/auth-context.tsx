@@ -179,6 +179,7 @@ interface AuthContextValor {
   carregat: boolean;
   iniciarSessio: (usuari: string, contrasenya: string) => boolean;
   tancarSessio: () => void;
+  actualitzarPerfilSessio: (dades: Partial<Professional>) => void;
 }
 
 const AuthContext = createContext<AuthContextValor | null>(null);
@@ -209,6 +210,11 @@ export function AuthProvider({ children }: { children: ReactNode }) {
     actualitzarSessio(null);
   }
 
+  function actualitzarPerfilSessio(dades: Partial<Professional>) {
+    if (!sessio) return;
+    actualitzarSessio({ ...sessio, ...dades });
+  }
+
   return (
     <AuthContext.Provider
       value={{
@@ -216,6 +222,7 @@ export function AuthProvider({ children }: { children: ReactNode }) {
         carregat: sessio !== undefined,
         iniciarSessio,
         tancarSessio,
+        actualitzarPerfilSessio,
       }}
     >
       {children}

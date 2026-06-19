@@ -68,4 +68,5 @@ export interface Professional {
   cognoms: string;
   especialitat: string;
   email: string;
+  fotoUrl?: string;
 }
