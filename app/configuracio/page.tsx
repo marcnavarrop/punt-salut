@@ -2,11 +2,8 @@
 
 import { useState } from "react";
 import {
-  IconMail,
-  IconPencil,
-  IconPlus,
-  IconStethoscope,
-  IconTrash,
+  IconBuildingHospital,
+  IconUserCircle,
   IconUsers,
 } from "@tabler/icons-react";
 import { useRequereSessio } from "@/lib/auth-context";
@@ -15,42 +12,34 @@ import { useConfig } from "@/lib/config-context";
 import { useCentres } from "@/lib/centres";
 import { useIdioma } from "@/lib/i18n-context";
 import { Sidebar } from "@/components/Sidebar";
-import { ModalConfirmacio } from "@/components/ModalConfirmacio";
-import type { Professional } from "@/types";
-import { FormulariProfessional } from "./FormulariProfessional";
 import { DadesCentre } from "./DadesCentre";
 import { PerfilProfessional } from "./PerfilProfessional";
+import { ProfessionalsCentre } from "./ProfessionalsCentre";
+
+type Pestanya = "perfil" | "centre" | "professionals";
 
 export default function ConfiguracioPage() {
   const { t } = useIdioma();
   const { sessio, carregat } = useRequereSessio();
-  const {
-    professionals,
-    afegirProfessional,
-    actualitzarProfessional,
-    eliminarProfessional,
-  } = useConfig();
+  const { professionals } = useConfig();
   const { obtenirCentre } = useCentres();
 
-  const [mostrarFormulari, setMostrarFormulari] = useState(false);
-  const [professionalEdicio, setProfessionalEdicio] = useState<
-    Professional | undefined
-  >(undefined);
-  const [professionalEliminar, setProfessionalEliminar] = useState<
-    Professional | null
-  >(null);
+  const [pestanya, setPestanya] = useState<Pestanya>("perfil");
 
   if (!carregat || !sessio) {
     return <CarregantSessio />;
   }
 
   const centre = obtenirCentre(sessio.centreId);
-  const professionalsCentre = professionals.filter(
-    (professional) => professional.centreId === sessio.centreId
-  );
   const perfilPropi =
     professionals.find((professional) => professional.id === sessio.id) ??
     sessio;
+
+  const PESTANYES: { id: Pestanya; etiqueta: string; icona: typeof IconUserCircle }[] = [
+    { id: "perfil", etiqueta: t("configuracio.elMeuPerfil"), icona: IconUserCircle },
+    { id: "centre", etiqueta: t("configuracio.dadesCentre"), icona: IconBuildingHospital },
+    { id: "professionals", etiqueta: t("configuracio.professionals"), icona: IconUsers },
+  ];
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -69,141 +58,41 @@ export default function ConfiguracioPage() {
           </div>
         </div>
 
+        {/* Pestanyes */}
+        <div className="border-b border-slate-200 bg-white px-4 sm:px-7">
+          <nav className="flex gap-1 overflow-x-auto">
+            {PESTANYES.map((p) => {
+              const Icona = p.icona;
+              const activa = pestanya === p.id;
+              return (
+                <button
+                  key={p.id}
+                  type="button"
+                  onClick={() => setPestanya(p.id)}
+                  className={`inline-flex shrink-0 items-center gap-1.5 border-b-2 px-3 py-3 text-[13px] font-medium transition ${
+                    activa
+                      ? "border-brand-600 text-brand-700"
+                      : "border-transparent text-slate-500 hover:text-slate-800"
+                  }`}
+                >
+                  <Icona className="h-[15px] w-[15px]" />
+                  {p.etiqueta}
+                </button>
+              );
+            })}
+          </nav>
+        </div>
+
         <div className="flex-1 bg-slate-50/40 px-4 py-5 sm:px-7 sm:py-6">
-          {/* Dades del centre */}
-          {centre && <DadesCentre centre={centre} />}
-
-          {/* El meu perfil */}
-          <div className="mt-4">
+          {pestanya === "perfil" && (
             <PerfilProfessional professional={perfilPropi} />
-          </div>
-
-          {/* Professionals */}
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
-              <div className="flex items-center gap-2">
-                <IconUsers className="h-4 w-4 text-brand-500" />
-                <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-                  {t("configuracio.professionals")}
-                </h2>
-              </div>
-              <button
-                type="button"
-                onClick={() => {
-                  setProfessionalEdicio(undefined);
-                  setMostrarFormulari(true);
-                }}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700"
-              >
-                <IconPlus className="h-[15px] w-[15px]" />
-                {t("configuracio.nouProfessional")}
-              </button>
-            </div>
-
-            {professionalsCentre.length === 0 ? (
-              <p className="rounded-xl border border-dashed border-slate-200 bg-white/60 px-4 py-6 text-center text-[13px] text-slate-400">
-                {t("configuracio.capProfessional")}
-              </p>
-            ) : (
-              <div className="divide-y divide-slate-100">
-                {professionalsCentre.map((professional) => (
-                  <div
-                    key={professional.id}
-                    className="flex flex-wrap items-center justify-between gap-3 py-3"
-                  >
-                    <div className="flex min-w-0 items-center gap-3">
-                      <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-600 text-[13px] font-semibold text-white">
-                        {professional.nom[0]}
-                        {professional.cognoms[0]}
-                      </div>
-                      <div className="min-w-0 leading-tight">
-                        <p className="text-[13px] font-medium text-slate-900">
-                          {professional.nom} {professional.cognoms}
-                        </p>
-                        <div className="mt-0.5 flex flex-wrap items-center gap-3 text-[12px] text-slate-400">
-                          <span className="inline-flex items-center gap-1">
-                            <IconMail className="h-3 w-3" />
-                            {professional.email}
-                          </span>
-                          <span className="inline-flex items-center gap-1">
-                            <IconStethoscope className="h-3 w-3" />
-                            {professional.especialitat}
-                          </span>
-                        </div>
-                      </div>
-                    </div>
-                    <div className="flex items-center gap-1.5">
-                      <button
-                        type="button"
-                        onClick={() => {
-                          setProfessionalEdicio(professional);
-                          setMostrarFormulari(true);
-                        }}
-                        className="grid h-8 w-8 place-items-center rounded-lg text-slate-400 transition hover:bg-slate-100 hover:text-slate-700"
-                        title={t("comu.editar")}
-                      >
-                        <IconPencil className="h-[15px] w-[15px]" />
-                      </button>
-                      <button
-                        type="button"
-                        onClick={() => setProfessionalEliminar(professional)}
-                        className="grid h-8 w-8 place-items-center rounded-lg text-red-400 transition hover:bg-red-50 hover:text-red-600"
-                        title={t("comu.eliminar")}
-                      >
-                        <IconTrash className="h-[15px] w-[15px]" />
-                      </button>
-                    </div>
-                  </div>
-                ))}
-              </div>
-            )}
-          </div>
+          )}
+          {pestanya === "centre" && centre && <DadesCentre centre={centre} />}
+          {pestanya === "professionals" && (
+            <ProfessionalsCentre centreId={sessio.centreId} />
+          )}
         </div>
       </div>
-
-      {mostrarFormulari && (
-        <FormulariProfessional
-          titol={
-            professionalEdicio
-              ? t("configuracio.editarProfessional")
-              : t("configuracio.nouProfessional")
-          }
-          etiquetaBoto={
-            professionalEdicio
-              ? t("comu.desarCanvis")
-              : t("configuracio.crearProfessional")
-          }
-          valorsInicials={professionalEdicio}
-          onTancar={() => setMostrarFormulari(false)}
-          onDesar={(dades) => {
-            if (professionalEdicio) {
-              actualitzarProfessional(professionalEdicio.id, {
-                ...dades,
-                centreId: professionalEdicio.centreId,
-              });
-            } else {
-              afegirProfessional({ ...dades, centreId: sessio.centreId });
-            }
-            setMostrarFormulari(false);
-          }}
-        />
-      )}
-
-      {professionalEliminar && (
-        <ModalConfirmacio
-          titol={t("configuracio.confirmarEliminarTitol")}
-          missatge={t("configuracio.confirmarEliminarMissatge", {
-            nom: `${professionalEliminar.nom} ${professionalEliminar.cognoms}`,
-          })}
-          etiquetaConfirmar={t("comu.eliminar")}
-          etiquetaCancelar={t("comu.cancelar")}
-          onCancelar={() => setProfessionalEliminar(null)}
-          onConfirmar={() => {
-            eliminarProfessional(professionalEliminar.id);
-            setProfessionalEliminar(null);
-          }}
-        />
-      )}
     </div>
   );
 }
