@@ -341,6 +341,7 @@ export default function PacientPage({
         <FormulariPacient
           titol={t("formulariPacient.editarPacientTitol")}
           etiquetaBoto={t("comu.desarCanvis")}
+          centreId={pacient.centreId}
           valorsInicials={pacient}
           onTancar={() => setMostrarEditar(false)}
           onDesar={(dades) => {

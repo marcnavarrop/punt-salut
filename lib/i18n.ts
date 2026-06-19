@@ -99,6 +99,9 @@ export const TRADUCCIONS = {
       ca: "Professional assignat",
       es: "Profesional asignado",
     },
+    diagnostic: { ca: "Diagnòstic", es: "Diagnóstico" },
+    frequencia: { ca: "Freqüència", es: "Frecuencia" },
+    senseFrequencia: { ca: "Sense definir", es: "Sin definir" },
   },
   configuracio: {
     titol: { ca: "Configuració", es: "Configuración" },
@@ -148,6 +151,33 @@ export const TRADUCCIONS = {
     contrasenyaActualitzada: {
       ca: "Contrasenya actualitzada",
       es: "Contraseña actualizada",
+    },
+    configuracioClinica: { ca: "Configuració clínica", es: "Configuración clínica" },
+    diagnosticsHabituals: {
+      ca: "Diagnòstics habituals",
+      es: "Diagnósticos habituales",
+    },
+    diagnosticsAjuda: {
+      ca: "Apareixeran com a suggeriments en crear un pacient nou.",
+      es: "Aparecerán como sugerencias al crear un paciente nuevo.",
+    },
+    afegirDiagnostic: { ca: "Afegir diagnòstic…", es: "Añadir diagnóstico…" },
+    capDiagnostic: {
+      ca: "Encara no hi ha diagnòstics habituals.",
+      es: "Todavía no hay diagnósticos habituales.",
+    },
+    frequenciesHabituals: {
+      ca: "Freqüències de seguiment habituals",
+      es: "Frecuencias de seguimiento habituales",
+    },
+    frequenciesAjuda: {
+      ca: "Apareixeran com a opcions de freqüència en la fitxa del pacient.",
+      es: "Aparecerán como opciones de frecuencia en la ficha del paciente.",
+    },
+    afegirFrequencia: { ca: "Afegir freqüència…", es: "Añadir frecuencia…" },
+    capFrequencia: {
+      ca: "Encara no hi ha freqüències habituals.",
+      es: "Todavía no hay frecuencias habituales.",
     },
     professionals: { ca: "Professionals", es: "Profesionales" },
     nouProfessional: { ca: "Nou professional", es: "Nuevo profesional" },

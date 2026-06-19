@@ -146,6 +146,7 @@ export default function PacientsPage() {
         <FormulariPacient
           titol={t("formulariPacient.nouPacientTitol")}
           etiquetaBoto={t("formulariPacient.crearPacient")}
+          centreId={sessio.centreId}
           onTancar={() => setMostrarModal(false)}
           onDesar={(dades) => {
             afegirPacient(dades);

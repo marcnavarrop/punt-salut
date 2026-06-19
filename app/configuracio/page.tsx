@@ -3,6 +3,7 @@
 import { useState } from "react";
 import {
   IconBuildingHospital,
+  IconClipboardList,
   IconUserCircle,
   IconUsers,
 } from "@tabler/icons-react";
@@ -15,8 +16,9 @@ import { Sidebar } from "@/components/Sidebar";
 import { DadesCentre } from "./DadesCentre";
 import { PerfilProfessional } from "./PerfilProfessional";
 import { ProfessionalsCentre } from "./ProfessionalsCentre";
+import { ConfiguracioClinica } from "./ConfiguracioClinica";
 
-type Pestanya = "perfil" | "centre" | "professionals";
+type Pestanya = "perfil" | "centre" | "professionals" | "clinica";
 
 export default function ConfiguracioPage() {
   const { t } = useIdioma();
@@ -39,6 +41,11 @@ export default function ConfiguracioPage() {
     { id: "perfil", etiqueta: t("configuracio.elMeuPerfil"), icona: IconUserCircle },
     { id: "centre", etiqueta: t("configuracio.dadesCentre"), icona: IconBuildingHospital },
     { id: "professionals", etiqueta: t("configuracio.professionals"), icona: IconUsers },
+    {
+      id: "clinica",
+      etiqueta: t("configuracio.configuracioClinica"),
+      icona: IconClipboardList,
+    },
   ];
 
   return (
@@ -90,6 +97,9 @@ export default function ConfiguracioPage() {
           {pestanya === "centre" && centre && <DadesCentre centre={centre} />}
           {pestanya === "professionals" && (
             <ProfessionalsCentre centreId={sessio.centreId} />
+          )}
+          {pestanya === "clinica" && (
+            <ConfiguracioClinica centreId={sessio.centreId} />
           )}
         </div>
       </div>

@@ -5,11 +5,13 @@ import { IconX } from "@tabler/icons-react";
 import type { FasePacient, Pacient } from "@/types";
 import { etiquetaFase } from "@/lib/etiquetes";
 import { dataAvui } from "@/lib/data-utils";
+import { useConfig } from "@/lib/config-context";
 import { useIdioma } from "@/lib/i18n-context";
 
 interface FormulariPacientProps {
   titol: string;
   etiquetaBoto: string;
+  centreId: string;
   valorsInicials?: Pacient;
   onTancar: () => void;
   onDesar: (dades: Omit<Pacient, "id" | "centreId">) => void;
@@ -25,11 +27,13 @@ const ESTIL_ETIQUETA = "text-[12px] font-medium text-slate-500";
 export function FormulariPacient({
   titol,
   etiquetaBoto,
+  centreId,
   valorsInicials,
   onTancar,
   onDesar,
 }: FormulariPacientProps) {
   const { idioma, t } = useIdioma();
+  const { diagnostics, frequencies } = useConfig();
   const [nom, setNom] = useState(valorsInicials?.nom ?? "");
   const [cognoms, setCognoms] = useState(valorsInicials?.cognoms ?? "");
   const [dataNaixement, setDataNaixement] = useState(
@@ -46,6 +50,12 @@ export function FormulariPacient({
   const [profesionalAssignat, setProfesionalAssignat] = useState(
     valorsInicials?.profesionalAssignat ?? "Marc Soler, fisioterapeuta"
   );
+  const [frequencia, setFrequencia] = useState(
+    valorsInicials?.frequencia ?? ""
+  );
+
+  const diagnosticsCentre = diagnostics.filter((d) => d.centreId === centreId);
+  const frequenciesCentre = frequencies.filter((f) => f.centreId === centreId);
 
   function gestionarEnviament(event: FormEvent<HTMLFormElement>) {
     event.preventDefault();
@@ -61,7 +71,7 @@ export function FormulariPacient({
       estat: valorsInicials?.estat ?? "actiu",
       dataInici: valorsInicials?.dataInici ?? dataAvui(),
       properaSessio: valorsInicials?.properaSessio,
-      frequencia: valorsInicials?.frequencia,
+      frequencia: frequencia || undefined,
     });
   }
 
@@ -144,10 +154,16 @@ export function FormulariPacient({
             <input
               required
               type="text"
+              list="diagnostics-habituals"
               value={diagnostic}
               onChange={(event) => setDiagnostic(event.target.value)}
               className={ESTIL_CAMP}
             />
+            <datalist id="diagnostics-habituals">
+              {diagnosticsCentre.map((d) => (
+                <option key={d.id} value={d.nom} />
+              ))}
+            </datalist>
           </div>
 
           <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
@@ -181,6 +197,22 @@ export function FormulariPacient({
                 className={ESTIL_CAMP}
               />
             </div>
+          </div>
+
+          <div>
+            <label className={ESTIL_ETIQUETA}>{t("formulariPacient.frequencia")}</label>
+            <select
+              value={frequencia}
+              onChange={(event) => setFrequencia(event.target.value)}
+              className={ESTIL_CAMP}
+            >
+              <option value="">{t("formulariPacient.senseFrequencia")}</option>
+              {frequenciesCentre.map((f) => (
+                <option key={f.id} value={f.nom}>
+                  {f.nom}
+                </option>
+              ))}
+            </select>
           </div>
 
           <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
