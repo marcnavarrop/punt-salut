@@ -46,17 +46,22 @@ function desar(centres: Centre[]) {
   }
 }
 
+function migrarCentre(centre: Centre): Centre {
+  if (centre.logoUrl) return centre;
+  const referencia = CENTRES_INICIALS.find((c) => c.id === centre.id);
+  return referencia?.logoUrl ? { ...centre, logoUrl: referencia.logoUrl } : centre;
+}
+
 function carregarCentresClient(): Centre[] {
   if (centresClient) return centresClient;
   try {
     const desats = localStorage.getItem(CLAU_CENTRES);
-    centresClient = desats ? JSON.parse(desats) : CENTRES_INICIALS;
+    const centres: Centre[] = desats ? JSON.parse(desats) : CENTRES_INICIALS;
+    centresClient = centres.map(migrarCentre);
   } catch {
     centresClient = CENTRES_INICIALS;
   }
-  if (!localStorage.getItem(CLAU_CENTRES)) {
-    desar(centresClient!);
-  }
+  desar(centresClient!);
   return centresClient!;
 }
 
