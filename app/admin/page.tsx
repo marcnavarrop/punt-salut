@@ -13,6 +13,7 @@ import { useCentres } from "@/lib/centres";
 import { useConfig } from "@/lib/config-context";
 import { useIdioma } from "@/lib/i18n-context";
 import { CarregantSessio } from "@/lib/auth-guard";
+import { LogoCentre } from "@/components/LogoCentre";
 
 const CLAU_ADMIN_SESSIO = "voltamed.admin-sessio";
 const ADMIN_EMAIL = "admin@voltamed.com";
@@ -206,12 +207,10 @@ export default function AdminPage() {
                 className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
               >
                 <div className="flex items-center gap-3">
-                  <div
-                    className="grid h-10 w-10 shrink-0 place-items-center rounded-lg text-[13px] font-semibold text-white"
-                    style={{ backgroundColor: centre.colorPrincipal }}
-                  >
-                    {centre.logo}
-                  </div>
+                  <LogoCentre
+                    centre={centre}
+                    className="h-10 w-10 shrink-0 rounded-lg text-[13px] font-semibold"
+                  />
                   <div className="leading-tight">
                     <p className="text-[14px] font-semibold text-slate-900">
                       {centre.nom}

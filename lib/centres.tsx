@@ -13,6 +13,7 @@ export interface Centre {
   id: string;
   nom: string;
   logo: string;
+  logoUrl?: string;
   colorPrincipal: string;
 }
 
@@ -21,6 +22,7 @@ export const CENTRES_INICIALS: Centre[] = [
     id: "punt-salut-montseny",
     nom: "Punt Salut Montseny",
     logo: "PSM",
+    logoUrl: "/logos/punt-salut-montseny.png",
     colorPrincipal: "#16a34a",
   },
   {

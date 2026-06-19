@@ -3,7 +3,6 @@
 import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import {
-  IconActivity,
   IconLogout,
   IconSettings,
   IconUsers,
@@ -12,6 +11,7 @@ import { useAuth } from "@/lib/auth-context";
 import { useCentres } from "@/lib/centres";
 import { useIdioma } from "@/lib/i18n-context";
 import { IDIOMES, type Idioma } from "@/lib/i18n";
+import { LogoCentre } from "@/components/LogoCentre";
 
 export function Sidebar() {
   const { sessio, tancarSessio } = useAuth();
@@ -34,9 +34,10 @@ export function Sidebar() {
   return (
     <aside className="hidden w-60 shrink-0 flex-col border-r border-slate-200 bg-slate-50/60 sm:flex">
       <div className="flex items-center gap-2.5 px-5 py-[18px]">
-        <div className="grid h-7 w-7 place-items-center rounded-lg bg-brand-600 text-white shadow-sm">
-          <IconActivity className="h-4 w-4" />
-        </div>
+        <LogoCentre
+          centre={centre}
+          className="h-7 w-7 shrink-0 rounded-lg text-[11px] font-semibold shadow-sm"
+        />
         <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight text-slate-900">
           {centre?.nom}
         </span>
