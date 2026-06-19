@@ -34,18 +34,18 @@ export function ModalConfirmacio({
           </div>
         </div>
 
-        <div className="mt-4 flex justify-end gap-2">
+        <div className="mt-4 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
           <button
             type="button"
             onClick={onCancelar}
-            className="rounded-lg border border-slate-200 px-3.5 py-2 text-[13px] font-medium text-slate-600 transition hover:bg-slate-50"
+            className="rounded-lg border border-slate-200 px-3.5 py-2.5 text-[13px] font-medium text-slate-600 transition hover:bg-slate-50 sm:py-2"
           >
             {etiquetaCancelar}
           </button>
           <button
             type="button"
             onClick={onConfirmar}
-            className="rounded-lg bg-red-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-red-700"
+            className="rounded-lg bg-red-600 px-3.5 py-2.5 text-[13px] font-medium text-white shadow-sm transition hover:bg-red-700 sm:py-2"
           >
             {etiquetaConfirmar}
           </button>

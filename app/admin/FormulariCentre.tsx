@@ -74,8 +74,8 @@ export function FormulariCentre({
   }
 
   return (
-    <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-5 shadow-lg">
+    <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 px-4 py-6">
+      <div className="w-full max-w-md rounded-xl border border-slate-200 bg-white p-4 shadow-lg sm:p-5">
         <div className="flex items-center justify-between">
           <h2 className="text-[15px] font-semibold tracking-tight text-slate-900">
             {titol}
@@ -117,7 +117,7 @@ export function FormulariCentre({
             <p className="mt-1 text-[11px] text-slate-400">{t("admin.slugAjuda")}</p>
           </div>
 
-          <div className="grid grid-cols-2 gap-3">
+          <div className="grid grid-cols-1 gap-3 sm:grid-cols-2">
             <div>
               <label className={ESTIL_ETIQUETA}>{t("admin.colorPrincipal")}</label>
               <input
@@ -145,7 +145,7 @@ export function FormulariCentre({
             </p>
           )}
 
-          <div className="mt-2 flex justify-end gap-2">
+          <div className="mt-2 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
             <button
               type="button"
               onClick={onTancar}

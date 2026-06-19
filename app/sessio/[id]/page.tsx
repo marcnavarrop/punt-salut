@@ -157,17 +157,17 @@ export default function SessioPage({
   return (
     <div className="min-h-screen bg-slate-100">
       <header className="border-b border-slate-200 bg-white">
-        <div className="flex flex-wrap items-center justify-between gap-4 px-6 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-4 px-4 py-4 sm:px-6">
           <div>
             <h1 className="text-lg font-semibold tracking-tight text-slate-900">
               {pacientNom} · Sessió {numeroSessio}
             </h1>
             <p className="text-sm text-slate-400 capitalize">{data}</p>
           </div>
-          <div className="flex shrink-0 gap-2">
+          <div className="flex w-full shrink-0 gap-2 sm:w-auto">
             <Link
               href={`/pacients/${id}`}
-              className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 sm:flex-none sm:py-2"
             >
               <IconArrowLeft className="h-4 w-4" />
               {t("sessio.tornarFitxa")}
@@ -175,7 +175,7 @@ export default function SessioPage({
             <button
               type="button"
               onClick={gestionarFinalitzar}
-              className="inline-flex items-center gap-1.5 rounded-lg bg-red-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-red-700"
+              className="inline-flex flex-1 items-center justify-center gap-1.5 rounded-lg bg-red-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-red-700 sm:flex-none sm:py-2"
             >
               <IconPlayerStop className="h-4 w-4" />
               {t("sessio.finalitzarSessio")}
@@ -184,12 +184,12 @@ export default function SessioPage({
         </div>
       </header>
 
-      <main className="mx-auto grid max-w-6xl gap-4 px-6 py-6 lg:grid-cols-3">
+      <main className="mx-auto grid max-w-6xl gap-4 px-4 py-6 sm:px-6 lg:grid-cols-3">
         {/* Panel de gravació */}
-        <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm lg:col-span-2">
-          <div className="flex flex-wrap items-center justify-between gap-4">
+        <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6 lg:col-span-2">
+          <div className="flex flex-wrap items-center justify-between gap-3">
             <div
-              className={`flex items-center gap-3 rounded-lg px-4 py-2 transition ${
+              className={`flex items-center gap-3 rounded-lg px-4 py-2.5 transition ${
                 isRecording ? "bg-red-50" : "bg-slate-50"
               }`}
             >
@@ -217,7 +217,7 @@ export default function SessioPage({
             <button
               type="button"
               onClick={() => setIsRecording((r) => !r)}
-              className={`inline-flex items-center gap-1.5 rounded-lg px-4 py-2 text-sm font-medium text-white shadow-sm transition ${
+              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-sm transition sm:w-auto sm:py-2 ${
                 isRecording
                   ? "bg-slate-600 hover:bg-slate-700"
                   : "bg-brand-600 hover:bg-brand-700"
@@ -236,7 +236,7 @@ export default function SessioPage({
             <h2 className="text-sm font-semibold tracking-tight text-slate-900">
               {t("sessio.transcripcioTempsReal")}
             </h2>
-            <div className="mt-2 h-96 space-y-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700">
+            <div className="mt-2 h-64 space-y-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 sm:h-96">
               {transcripcioIndex === 0 ? (
                 <p className="text-slate-400">
                   {t("sessio.transcripcioEspera")}
@@ -257,7 +257,7 @@ export default function SessioPage({
         {/* Columna d'anàlisi */}
         <div className="flex flex-col gap-4">
           {/* Anàlisi intel·ligent */}
-          <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <h2 className="text-sm font-semibold tracking-tight text-slate-900">
               {t("sessio.analisiIntelligent")}
             </h2>
@@ -310,7 +310,7 @@ export default function SessioPage({
           </section>
 
           {/* Resum estructurat */}
-          <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <h2 className="text-sm font-semibold tracking-tight text-slate-900">
               {t("comu.resumEstructurat")}
             </h2>
@@ -365,7 +365,7 @@ export default function SessioPage({
           </section>
 
           {/* Preguntes per a la propera sessió */}
-          <section className="rounded-xl border border-slate-200 bg-white p-6 shadow-sm">
+          <section className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-6">
             <h2 className="flex items-center gap-2 text-sm font-semibold tracking-tight text-slate-900">
               <IconBulb className="h-4 w-4 text-brand-600" />
               {t("sessio.preguntesSeguentSessio")}
@@ -387,8 +387,8 @@ export default function SessioPage({
 
       {/* Modal de confirmació de finalització */}
       {mostrarModal && analisi && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/40 px-4">
-          <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-6 shadow-lg">
+        <div className="fixed inset-0 z-50 flex items-center justify-center overflow-y-auto bg-black/40 px-4 py-6">
+          <div className="w-full max-w-lg rounded-xl border border-slate-200 bg-white p-4 shadow-lg sm:p-6">
             <div className="flex items-center gap-2">
               <IconDeviceFloppy className="h-5 w-5 text-brand-600" />
               <h2 className="text-lg font-semibold tracking-tight text-slate-900">
@@ -459,11 +459,11 @@ export default function SessioPage({
               ))}
             </div>
 
-            <div className="mt-6 flex justify-end gap-2">
+            <div className="mt-6 flex flex-col-reverse gap-2 sm:flex-row sm:justify-end">
               <button
                 type="button"
                 onClick={() => setMostrarModal(false)}
-                className="inline-flex items-center gap-1.5 rounded-lg border border-slate-200 px-4 py-2 text-sm font-medium text-slate-700 transition hover:bg-slate-50"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg border border-slate-200 px-4 py-3 text-sm font-medium text-slate-700 transition hover:bg-slate-50 sm:py-2"
               >
                 <IconPencil className="h-4 w-4" />
                 {t("sessio.continuarEditant")}
@@ -471,7 +471,7 @@ export default function SessioPage({
               <button
                 type="button"
                 onClick={gestionarDesar}
-                className="inline-flex items-center gap-1.5 rounded-lg bg-brand-600 px-4 py-2 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700"
+                className="inline-flex items-center justify-center gap-1.5 rounded-lg bg-brand-600 px-4 py-3 text-sm font-medium text-white shadow-sm transition hover:bg-brand-700 sm:py-2"
               >
                 <IconDeviceFloppy className="h-4 w-4" />
                 {t("sessio.desarSessio")}

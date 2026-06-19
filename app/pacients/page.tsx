@@ -52,7 +52,7 @@ export default function PacientsPage() {
       {/* Contingut principal */}
       <div className="flex flex-1 flex-col">
         {/* Top bar */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-7 py-4">
+        <div className="flex flex-wrap items-center justify-between gap-3 border-b border-slate-200 px-4 py-3 pl-16 sm:px-7 sm:py-4 sm:pl-7">
           <div>
             <h1 className="text-[17px] font-semibold tracking-tight text-slate-900">
               {centre?.nom}
@@ -61,8 +61,8 @@ export default function PacientsPage() {
               {t("pacients.assistentClinic")}
             </p>
           </div>
-          <div className="flex items-center gap-4">
-            <div className="flex items-center gap-1.5 text-[13px] text-slate-500">
+          <div className="flex items-center gap-3 sm:gap-4">
+            <div className="hidden items-center gap-1.5 text-[13px] text-slate-500 sm:flex">
               <span className="font-semibold text-slate-800 tabular-nums">
                 {pacientsActius}
               </span>{" "}
@@ -80,9 +80,9 @@ export default function PacientsPage() {
         </div>
 
         {/* Contingut */}
-        <div className="flex-1 bg-slate-50/40 px-7 py-6">
+        <div className="flex-1 bg-slate-50/40 px-4 py-5 sm:px-7 sm:py-6">
           {/* Cerca */}
-          <div className="relative mb-5 max-w-md">
+          <div className="relative mb-5 w-full sm:max-w-md">
             <IconSearch className="pointer-events-none absolute left-3 top-1/2 h-4 w-4 -translate-y-1/2 text-slate-400" />
             <input
               type="text"

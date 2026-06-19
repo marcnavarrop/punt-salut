@@ -56,7 +56,7 @@ export default function ConfiguracioPage() {
 
       <div className="flex flex-1 flex-col">
         {/* Top bar */}
-        <div className="flex items-center justify-between border-b border-slate-200 px-7 py-4">
+        <div className="flex items-center justify-between border-b border-slate-200 px-4 py-3 pl-16 sm:px-7 sm:py-4 sm:pl-7">
           <div>
             <h1 className="text-[17px] font-semibold tracking-tight text-slate-900">
               {t("configuracio.titol")}
@@ -67,9 +67,9 @@ export default function ConfiguracioPage() {
           </div>
         </div>
 
-        <div className="flex-1 bg-slate-50/40 px-7 py-6">
+        <div className="flex-1 bg-slate-50/40 px-4 py-5 sm:px-7 sm:py-6">
           {/* Dades del centre */}
-          <div className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
+          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
             <div className="mb-4 flex items-center gap-2">
               <IconBuildingHospital className="h-4 w-4 text-brand-500" />
               <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
@@ -80,7 +80,7 @@ export default function ConfiguracioPage() {
               <label className="text-[12px] font-medium text-slate-500">
                 {t("configuracio.nomCentre")}
               </label>
-              <div className="mt-1 flex gap-2">
+              <div className="mt-1 flex flex-col gap-2 sm:flex-row">
                 <input
                   type="text"
                   value={nomCentreEdicio}
@@ -105,8 +105,8 @@ export default function ConfiguracioPage() {
           </div>
 
           {/* Professionals */}
-          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-5 shadow-sm">
-            <div className="mb-4 flex items-center justify-between">
+          <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
+            <div className="mb-4 flex flex-wrap items-center justify-between gap-2">
               <div className="flex items-center gap-2">
                 <IconUsers className="h-4 w-4 text-brand-500" />
                 <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
@@ -135,18 +135,18 @@ export default function ConfiguracioPage() {
                 {professionalsCentre.map((professional) => (
                   <div
                     key={professional.id}
-                    className="flex items-center justify-between gap-4 py-3"
+                    className="flex flex-wrap items-center justify-between gap-3 py-3"
                   >
-                    <div className="flex items-center gap-3">
+                    <div className="flex min-w-0 items-center gap-3">
                       <div className="grid h-9 w-9 shrink-0 place-items-center rounded-full bg-brand-600 text-[13px] font-semibold text-white">
                         {professional.nom[0]}
                         {professional.cognoms[0]}
                       </div>
-                      <div className="leading-tight">
+                      <div className="min-w-0 leading-tight">
                         <p className="text-[13px] font-medium text-slate-900">
                           {professional.nom} {professional.cognoms}
                         </p>
-                        <div className="mt-0.5 flex items-center gap-3 text-[12px] text-slate-400">
+                        <div className="mt-0.5 flex flex-wrap items-center gap-3 text-[12px] text-slate-400">
                           <span className="inline-flex items-center gap-1">
                             <IconMail className="h-3 w-3" />
                             {professional.email}

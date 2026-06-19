@@ -246,14 +246,14 @@ export default function AdminPage() {
   return (
     <div className="min-h-screen bg-slate-100 px-4 py-8">
       <div className="mx-auto max-w-3xl">
-        <div className="flex items-center justify-between">
+        <div className="flex flex-wrap items-center justify-between gap-3">
           <div>
             <h1 className="text-[17px] font-semibold tracking-tight text-slate-900">
               {t("admin.titol")}
             </h1>
             <p className="text-[13px] text-slate-400">{t("admin.subtitol")}</p>
           </div>
-          <div className="flex items-center gap-2">
+          <div className="flex flex-wrap items-center gap-2">
             <button
               type="button"
               onClick={() => setCentreFormulari("nou")}
@@ -285,15 +285,15 @@ export default function AdminPage() {
             return (
               <div
                 key={centre.id}
-                className="rounded-xl border border-slate-200 bg-white p-5 shadow-sm"
+                className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5"
               >
-                <div className="flex items-center justify-between">
-                  <div className="flex items-center gap-3">
+                <div className="flex flex-wrap items-center justify-between gap-3">
+                  <div className="flex min-w-0 items-center gap-3">
                     <LogoCentre
                       centre={centre}
                       className="h-10 w-10 shrink-0 rounded-lg text-[13px] font-semibold"
                     />
-                    <div className="leading-tight">
+                    <div className="min-w-0 leading-tight">
                       <p className="text-[14px] font-semibold text-slate-900">
                         {centre.nom}
                       </p>
@@ -323,7 +323,7 @@ export default function AdminPage() {
                 </div>
 
                 <div className="mt-4 border-t border-slate-100 pt-3">
-                  <div className="mb-2 flex items-center justify-between">
+                  <div className="mb-2 flex flex-wrap items-center justify-between gap-2">
                     <div className="flex items-center gap-2">
                       <IconUsers className="h-4 w-4 text-brand-500" />
                       <h2 className="text-[13px] font-semibold tracking-tight text-slate-700">
@@ -351,18 +351,18 @@ export default function AdminPage() {
                       {professionalsCentre.map((professional) => (
                         <div
                           key={professional.id}
-                          className="flex items-center justify-between gap-3 py-2.5"
+                          className="flex flex-wrap items-center justify-between gap-3 py-2.5"
                         >
-                          <div className="flex items-center gap-3">
+                          <div className="flex min-w-0 items-center gap-3">
                             <div className="grid h-8 w-8 shrink-0 place-items-center rounded-full bg-brand-600 text-[12px] font-semibold text-white">
                               {professional.nom[0]}
                               {professional.cognoms[0]}
                             </div>
-                            <div className="leading-tight">
+                            <div className="min-w-0 leading-tight">
                               <p className="text-[13px] font-medium text-slate-900">
                                 {professional.nom} {professional.cognoms}
                               </p>
-                              <div className="mt-0.5 flex items-center gap-3 text-[12px] text-slate-400">
+                              <div className="mt-0.5 flex flex-wrap items-center gap-3 text-[12px] text-slate-400">
                                 <span className="inline-flex items-center gap-1">
                                   <IconMail className="h-3 w-3" />
                                   {professional.email}
