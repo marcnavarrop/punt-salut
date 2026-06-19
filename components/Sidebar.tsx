@@ -9,13 +9,14 @@ import {
   IconUsers,
 } from "@tabler/icons-react";
 import { useAuth } from "@/lib/auth-context";
-import { useConfig } from "@/lib/config-context";
+import { useCentres } from "@/lib/centres";
 import { useIdioma } from "@/lib/i18n-context";
 import { IDIOMES, type Idioma } from "@/lib/i18n";
 
 export function Sidebar() {
   const { sessio, tancarSessio } = useAuth();
-  const { nomCentre } = useConfig();
+  const { obtenirCentre } = useCentres();
+  const centre = sessio ? obtenirCentre(sessio.centreId) : undefined;
   const { idioma, canviarIdioma, t } = useIdioma();
   const router = useRouter();
   const pathname = usePathname();
@@ -37,7 +38,7 @@ export function Sidebar() {
           <IconActivity className="h-4 w-4" />
         </div>
         <span className="whitespace-nowrap text-[15px] font-semibold tracking-tight text-slate-900">
-          {nomCentre}
+          {centre?.nom}
         </span>
       </div>
 

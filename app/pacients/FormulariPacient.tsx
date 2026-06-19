@@ -12,7 +12,7 @@ interface FormulariPacientProps {
   etiquetaBoto: string;
   valorsInicials?: Pacient;
   onTancar: () => void;
-  onDesar: (dades: Omit<Pacient, "id">) => void;
+  onDesar: (dades: Omit<Pacient, "id" | "centreId">) => void;
 }
 
 const FASES: FasePacient[] = ["agut", "subagut", "cronic"];

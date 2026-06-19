@@ -13,6 +13,7 @@ import {
 import { useRequereSessio } from "@/lib/auth-context";
 import { CarregantSessio } from "@/lib/auth-guard";
 import { useConfig } from "@/lib/config-context";
+import { useCentres } from "@/lib/centres";
 import { useIdioma } from "@/lib/i18n-context";
 import { Sidebar } from "@/components/Sidebar";
 import { ModalConfirmacio } from "@/components/ModalConfirmacio";
@@ -23,15 +24,14 @@ export default function ConfiguracioPage() {
   const { t } = useIdioma();
   const { sessio, carregat } = useRequereSessio();
   const {
-    nomCentre,
     professionals,
-    actualitzarNomCentre,
     afegirProfessional,
     actualitzarProfessional,
     eliminarProfessional,
   } = useConfig();
+  const { obtenirCentre, actualitzarNomCentre } = useCentres();
 
-  const [nomCentreEdicio, setNomCentreEdicio] = useState(nomCentre);
+  const [nomCentreDraft, setNomCentreDraft] = useState<string | null>(null);
   const [mostrarFormulari, setMostrarFormulari] = useState(false);
   const [professionalEdicio, setProfessionalEdicio] = useState<
     Professional | undefined
@@ -43,6 +43,12 @@ export default function ConfiguracioPage() {
   if (!carregat || !sessio) {
     return <CarregantSessio />;
   }
+
+  const centre = obtenirCentre(sessio.centreId);
+  const nomCentreEdicio = nomCentreDraft ?? centre?.nom ?? "";
+  const professionalsCentre = professionals.filter(
+    (professional) => professional.centreId === sessio.centreId
+  );
 
   return (
     <div className="flex min-h-screen bg-slate-100">
@@ -78,15 +84,18 @@ export default function ConfiguracioPage() {
                 <input
                   type="text"
                   value={nomCentreEdicio}
-                  onChange={(event) => setNomCentreEdicio(event.target.value)}
+                  onChange={(event) => setNomCentreDraft(event.target.value)}
                   className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/15"
                 />
                 <button
                   type="button"
                   disabled={
-                    !nomCentreEdicio.trim() || nomCentreEdicio === nomCentre
+                    !nomCentreEdicio.trim() || nomCentreEdicio === centre?.nom
                   }
-                  onClick={() => actualitzarNomCentre(nomCentreEdicio.trim())}
+                  onClick={() => {
+                    actualitzarNomCentre(sessio.centreId, nomCentreEdicio.trim());
+                    setNomCentreDraft(null);
+                  }}
                   className="shrink-0 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
                 >
                   {t("comu.desar")}
@@ -117,13 +126,13 @@ export default function ConfiguracioPage() {
               </button>
             </div>
 
-            {professionals.length === 0 ? (
+            {professionalsCentre.length === 0 ? (
               <p className="rounded-xl border border-dashed border-slate-200 bg-white/60 px-4 py-6 text-center text-[13px] text-slate-400">
                 {t("configuracio.capProfessional")}
               </p>
             ) : (
               <div className="divide-y divide-slate-100">
-                {professionals.map((professional) => (
+                {professionalsCentre.map((professional) => (
                   <div
                     key={professional.id}
                     className="flex items-center justify-between gap-4 py-3"
@@ -194,9 +203,12 @@ export default function ConfiguracioPage() {
           onTancar={() => setMostrarFormulari(false)}
           onDesar={(dades) => {
             if (professionalEdicio) {
-              actualitzarProfessional(professionalEdicio.id, dades);
+              actualitzarProfessional(professionalEdicio.id, {
+                ...dades,
+                centreId: professionalEdicio.centreId,
+              });
             } else {
-              afegirProfessional(dades);
+              afegirProfessional({ ...dades, centreId: sessio.centreId });
             }
             setMostrarFormulari(false);
           }}

@@ -4,6 +4,7 @@ import { AuthProvider } from "@/lib/auth-context";
 import { AuthGuard } from "@/lib/auth-guard";
 import { DadesProvider } from "@/lib/dades-context";
 import { ConfigProvider } from "@/lib/config-context";
+import { CentresProvider } from "@/lib/centres";
 import { IdiomaProvider } from "@/lib/i18n-context";
 import "./globals.css";
 
@@ -26,13 +27,15 @@ export default function RootLayout({
     <html lang="ca" className={`${inter.variable} h-full antialiased`}>
       <body className="flex min-h-full flex-col bg-slate-100 font-sans text-slate-900">
         <IdiomaProvider>
-          <AuthProvider>
-            <AuthGuard>
-              <DadesProvider>
-                <ConfigProvider>{children}</ConfigProvider>
-              </DadesProvider>
-            </AuthGuard>
-          </AuthProvider>
+          <CentresProvider>
+            <AuthProvider>
+              <AuthGuard>
+                <DadesProvider>
+                  <ConfigProvider>{children}</ConfigProvider>
+                </DadesProvider>
+              </AuthGuard>
+            </AuthProvider>
+          </CentresProvider>
         </IdiomaProvider>
       </body>
     </html>

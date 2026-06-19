@@ -8,6 +8,7 @@ export type Evolucio = "millora" | "estable" | "empitjora";
 
 export interface Pacient {
   id: string;
+  centreId: string;
   nom: string;
   cognoms: string;
   dataNaixement: string;
@@ -47,6 +48,7 @@ export interface ResumEstructurat {
 
 export interface Sessio {
   id: string;
+  centreId: string;
   pacientId: string;
   data: string;
   numero: number;
@@ -61,6 +63,7 @@ export interface Sessio {
 
 export interface Professional {
   id: string;
+  centreId: string;
   nom: string;
   cognoms: string;
   especialitat: string;

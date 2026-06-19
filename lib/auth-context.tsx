@@ -24,6 +24,7 @@ const USUARIS: CredencialUsuari[] = [
     contrasenya: "1234",
     professional: {
       id: "marc",
+      centreId: "punt-salut-montseny",
       nom: "Marc",
       cognoms: "Soler",
       especialitat: "Fisioterapeuta",
@@ -35,10 +36,23 @@ const USUARIS: CredencialUsuari[] = [
     contrasenya: "1234",
     professional: {
       id: "adria",
+      centreId: "punt-salut-montseny",
       nom: "Adrià",
       cognoms: "Puig",
       especialitat: "Fisioterapeuta",
       email: "adria@puntsalutmontseny.cat",
+    },
+  },
+  {
+    usuari: "laura",
+    contrasenya: "1234",
+    professional: {
+      id: "laura",
+      centreId: "clinica-exemple",
+      nom: "Laura",
+      cognoms: "Ferrer",
+      especialitat: "Fisioterapeuta",
+      email: "laura@clinicaexemple.cat",
     },
   },
 ];

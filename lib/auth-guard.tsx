@@ -5,6 +5,7 @@ import { usePathname, useRouter } from "next/navigation";
 import { useAuth } from "@/lib/auth-context";
 
 const RUTA_LOGIN = "/login";
+const PREFIX_ADMIN = "/admin";
 
 export function CarregantSessio() {
   return (
@@ -20,15 +21,20 @@ export function AuthGuard({ children }: { children: ReactNode }) {
   const router = useRouter();
 
   const esRutaLogin = pathname === RUTA_LOGIN;
+  const esRutaAdmin = pathname.startsWith(PREFIX_ADMIN);
 
   useEffect(() => {
-    if (!carregat) return;
+    if (!carregat || esRutaAdmin) return;
     if (!sessio && !esRutaLogin) {
       router.replace(RUTA_LOGIN);
     } else if (sessio && esRutaLogin) {
       router.replace("/pacients");
     }
-  }, [carregat, sessio, esRutaLogin, router]);
+  }, [carregat, sessio, esRutaLogin, esRutaAdmin, router]);
+
+  if (esRutaAdmin) {
+    return <>{children}</>;
+  }
 
   if (!carregat || (!sessio && !esRutaLogin) || (sessio && esRutaLogin)) {
     return <CarregantSessio />;

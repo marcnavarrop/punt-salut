@@ -11,15 +11,14 @@ import type { Professional } from "@/types";
 const CLAU_CONFIG = "puntsalut.config";
 
 interface Config {
-  nomCentre: string;
   professionals: Professional[];
 }
 
 const CONFIG_INICIAL: Config = {
-  nomCentre: "Punt Salut Montseny",
   professionals: [
     {
       id: "marc",
+      centreId: "punt-salut-montseny",
       nom: "Marc",
       cognoms: "Soler",
       especialitat: "Fisioterapeuta",
@@ -27,10 +26,19 @@ const CONFIG_INICIAL: Config = {
     },
     {
       id: "adria",
+      centreId: "punt-salut-montseny",
       nom: "Adrià",
       cognoms: "Puig",
       especialitat: "Fisioterapeuta",
       email: "adria@puntsalutmontseny.cat",
+    },
+    {
+      id: "laura",
+      centreId: "clinica-exemple",
+      nom: "Laura",
+      cognoms: "Ferrer",
+      especialitat: "Fisioterapeuta",
+      email: "laura@clinicaexemple.cat",
     },
   ],
 };
@@ -82,9 +90,7 @@ function obtenirSnapshotServidor(): Config {
 }
 
 interface ConfigContextValor {
-  nomCentre: string;
   professionals: Professional[];
-  actualitzarNomCentre: (nom: string) => void;
   afegirProfessional: (dades: Omit<Professional, "id">) => void;
   actualitzarProfessional: (id: string, dades: Omit<Professional, "id">) => void;
   eliminarProfessional: (id: string) => void;
@@ -98,10 +104,6 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     obtenirSnapshot,
     obtenirSnapshotServidor
   );
-
-  function actualitzarNomCentre(nom: string) {
-    actualitzarConfig({ ...config, nomCentre: nom });
-  }
 
   function afegirProfessional(dades: Omit<Professional, "id">) {
     const nou: Professional = { ...dades, id: crypto.randomUUID() };
@@ -132,9 +134,7 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
   return (
     <ConfigContext.Provider
       value={{
-        nomCentre: config.nomCentre,
         professionals: config.professionals,
-        actualitzarNomCentre,
         afegirProfessional,
         actualitzarProfessional,
         eliminarProfessional,

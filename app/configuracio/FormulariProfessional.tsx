@@ -10,7 +10,7 @@ interface FormulariProfessionalProps {
   etiquetaBoto: string;
   valorsInicials?: Professional;
   onTancar: () => void;
-  onDesar: (dades: Omit<Professional, "id">) => void;
+  onDesar: (dades: Omit<Professional, "id" | "centreId">) => void;
 }
 
 const ESTIL_CAMP =

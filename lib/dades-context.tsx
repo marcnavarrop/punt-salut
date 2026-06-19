@@ -8,6 +8,7 @@ import {
 } from "react";
 import type { Pacient, Sessio } from "@/types";
 import { PACIENTS_INICIALS, SESSIONS_INICIALS } from "@/lib/dades-inicials";
+import { useAuth } from "@/lib/auth-context";
 
 const CLAU_PACIENTS = "puntsalut.pacients";
 const CLAU_SESSIONS = "puntsalut.sessions";
@@ -81,10 +82,13 @@ function obtenirSnapshotServidor(): Estat {
 interface DadesContextValor {
   pacients: Pacient[];
   sessions: Sessio[];
-  afegirPacient: (dades: Omit<Pacient, "id">) => Pacient;
-  actualitzarPacient: (id: string, dades: Omit<Pacient, "id">) => void;
+  afegirPacient: (dades: Omit<Pacient, "id" | "centreId">) => Pacient;
+  actualitzarPacient: (
+    id: string,
+    dades: Omit<Pacient, "id" | "centreId">
+  ) => void;
   eliminarPacient: (id: string) => void;
-  afegirSessio: (dades: Omit<Sessio, "id">) => Sessio;
+  afegirSessio: (dades: Omit<Sessio, "id" | "centreId">) => Sessio;
   obtenirPacient: (id: string) => Pacient | undefined;
   obtenirSessio: (id: string) => Sessio | undefined;
   obtenirSessionsPacient: (pacientId: string) => Sessio[];
@@ -98,18 +102,36 @@ export function DadesProvider({ children }: { children: ReactNode }) {
     obtenirSnapshot,
     obtenirSnapshotServidor
   );
+  const { sessio } = useAuth();
+  const centreId = sessio?.centreId;
 
-  function afegirPacient(dades: Omit<Pacient, "id">): Pacient {
-    const nou: Pacient = { ...dades, id: crypto.randomUUID() };
+  const pacients = estat.pacients.filter(
+    (pacient) => pacient.centreId === centreId
+  );
+  const sessions = estat.sessions.filter(
+    (sessioRegistre) => sessioRegistre.centreId === centreId
+  );
+
+  function afegirPacient(dades: Omit<Pacient, "id" | "centreId">): Pacient {
+    const nou: Pacient = {
+      ...dades,
+      id: crypto.randomUUID(),
+      centreId: centreId ?? "",
+    };
     actualitzarEstat({ ...estat, pacients: [...estat.pacients, nou] });
     return nou;
   }
 
-  function actualitzarPacient(id: string, dades: Omit<Pacient, "id">) {
+  function actualitzarPacient(
+    id: string,
+    dades: Omit<Pacient, "id" | "centreId">
+  ) {
     actualitzarEstat({
       ...estat,
       pacients: estat.pacients.map((pacient) =>
-        pacient.id === id ? { ...dades, id } : pacient
+        pacient.id === id
+          ? { ...dades, id, centreId: pacient.centreId }
+          : pacient
       ),
     });
   }
@@ -122,22 +144,27 @@ export function DadesProvider({ children }: { children: ReactNode }) {
     });
   }
 
-  function afegirSessio(dades: Omit<Sessio, "id">): Sessio {
-    const nova: Sessio = { ...dades, id: crypto.randomUUID() };
+  function afegirSessio(dades: Omit<Sessio, "id" | "centreId">): Sessio {
+    const pacient = estat.pacients.find((p) => p.id === dades.pacientId);
+    const nova: Sessio = {
+      ...dades,
+      id: crypto.randomUUID(),
+      centreId: pacient?.centreId ?? centreId ?? "",
+    };
     actualitzarEstat({ ...estat, sessions: [...estat.sessions, nova] });
     return nova;
   }
 
   function obtenirPacient(id: string) {
-    return estat.pacients.find((pacient) => pacient.id === id);
+    return pacients.find((pacient) => pacient.id === id);
   }
 
   function obtenirSessio(id: string) {
-    return estat.sessions.find((sessio) => sessio.id === id);
+    return sessions.find((sessio) => sessio.id === id);
   }
 
   function obtenirSessionsPacient(pacientId: string) {
-    return estat.sessions
+    return sessions
       .filter((sessio) => sessio.pacientId === pacientId)
       .sort((a, b) => b.numero - a.numero);
   }
@@ -145,8 +172,8 @@ export function DadesProvider({ children }: { children: ReactNode }) {
   return (
     <DadesContext.Provider
       value={{
-        pacients: estat.pacients,
-        sessions: estat.sessions,
+        pacients,
+        sessions,
         afegirPacient,
         actualitzarPacient,
         eliminarPacient,

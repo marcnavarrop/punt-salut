@@ -14,7 +14,7 @@ import { calcularEdat } from "@/lib/data-utils";
 import { useRequereSessio } from "@/lib/auth-context";
 import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
-import { useConfig } from "@/lib/config-context";
+import { useCentres } from "@/lib/centres";
 import { useIdioma } from "@/lib/i18n-context";
 import { Sidebar } from "@/components/Sidebar";
 import { FormulariPacient } from "./FormulariPacient";
@@ -25,7 +25,7 @@ function inicials(nom: string, cognoms: string): string {
 
 export default function PacientsPage() {
   const { pacients, afegirPacient } = useDades();
-  const { nomCentre } = useConfig();
+  const { obtenirCentre } = useCentres();
   const { idioma, t } = useIdioma();
   const { sessio, carregat } = useRequereSessio();
   const [cerca, setCerca] = useState("");
@@ -34,6 +34,8 @@ export default function PacientsPage() {
   if (!carregat || !sessio) {
     return <CarregantSessio />;
   }
+
+  const centre = obtenirCentre(sessio.centreId);
 
   const cercaNormalitzada = cerca.trim().toLowerCase();
   const pacientsFiltrats = pacients.filter((pacient) => {
@@ -53,7 +55,7 @@ export default function PacientsPage() {
         <div className="flex items-center justify-between border-b border-slate-200 px-7 py-4">
           <div>
             <h1 className="text-[17px] font-semibold tracking-tight text-slate-900">
-              {nomCentre}
+              {centre?.nom}
             </h1>
             <p className="text-[13px] text-slate-400">
               {t("pacients.assistentClinic")}

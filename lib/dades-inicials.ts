@@ -4,6 +4,7 @@ import type { Pacient, Sessio } from "@/types";
 export const PACIENTS_INICIALS: Pacient[] = [
   {
     id: "1",
+    centreId: "punt-salut-montseny",
     nom: "Maria",
     cognoms: "Guasch",
     dataNaixement: "1974-03-15",
@@ -19,6 +20,7 @@ export const PACIENTS_INICIALS: Pacient[] = [
   },
   {
     id: "2",
+    centreId: "punt-salut-montseny",
     nom: "Josep",
     cognoms: "Roca",
     dataNaixement: "1988-02-10",
@@ -34,6 +36,7 @@ export const PACIENTS_INICIALS: Pacient[] = [
   },
   {
     id: "3",
+    centreId: "punt-salut-montseny",
     nom: "Anna",
     cognoms: "Torres",
     dataNaixement: "1958-11-02",
@@ -49,6 +52,7 @@ export const PACIENTS_INICIALS: Pacient[] = [
   },
   {
     id: "4",
+    centreId: "punt-salut-montseny",
     nom: "Pere",
     cognoms: "Vidal",
     dataNaixement: "1981-08-05",
@@ -62,6 +66,7 @@ export const PACIENTS_INICIALS: Pacient[] = [
   },
   {
     id: "5",
+    centreId: "punt-salut-montseny",
     nom: "Laia",
     cognoms: "Mas",
     dataNaixement: "1996-09-30",
@@ -75,11 +80,28 @@ export const PACIENTS_INICIALS: Pacient[] = [
     properaSessio: "2026-06-17",
     frequencia: "Setmanal",
   },
+  {
+    id: "6",
+    centreId: "clinica-exemple",
+    nom: "Núria",
+    cognoms: "Ferran",
+    dataNaixement: "1985-04-22",
+    telefon: "678 123 456",
+    email: "nuria.ferran@email.com",
+    diagnostic: "Tendinitis de l'espatlla",
+    fase: "subagut",
+    profesionalAssignat: "Laura Ferrer, fisioterapeuta",
+    estat: "actiu",
+    dataInici: "2026-05-04",
+    properaSessio: "2026-06-19",
+    frequencia: "Setmanal",
+  },
 ];
 
 export const SESSIONS_INICIALS: Sessio[] = [
   {
     id: "1-3",
+    centreId: "punt-salut-montseny",
     pacientId: "1",
     numero: 3,
     data: "2026-06-08",
@@ -91,6 +113,7 @@ export const SESSIONS_INICIALS: Sessio[] = [
   },
   {
     id: "1-2",
+    centreId: "punt-salut-montseny",
     pacientId: "1",
     numero: 2,
     data: "2026-05-25",
@@ -110,6 +133,7 @@ export const SESSIONS_INICIALS: Sessio[] = [
   },
   {
     id: "1-1",
+    centreId: "punt-salut-montseny",
     pacientId: "1",
     numero: 1,
     data: "2026-05-11",
@@ -118,5 +142,17 @@ export const SESSIONS_INICIALS: Sessio[] = [
       "Dolor lumbar crònic d'inici fa 8 mesos, EVA 6/10. S'inicia pla de tractament amb exercici terapèutic.",
     evolucio: "estable",
     eva: 6,
+  },
+  {
+    id: "6-1",
+    centreId: "clinica-exemple",
+    pacientId: "6",
+    numero: 1,
+    data: "2026-05-04",
+    titol: "Primera visita: avaluació inicial",
+    previewResum:
+      "Dolor a l'espatlla dreta en moviments d'elevació, EVA 5/10. S'inicia pla de tractament amb exercici terapèutic.",
+    evolucio: "estable",
+    eva: 5,
   },
 ];

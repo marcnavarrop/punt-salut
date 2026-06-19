@@ -129,6 +129,23 @@ export const TRADUCCIONS = {
       es: "¿Seguro que quieres eliminar a {nom}? Esta acción no se puede deshacer.",
     },
   },
+  admin: {
+    titol: { ca: "Administració", es: "Administración" },
+    subtitol: {
+      ca: "Llista de centres i professionals registrats a Voltamed",
+      es: "Lista de centros y profesionales registrados en Voltamed",
+    },
+    iniciaSessio: {
+      ca: "Accés d'administració",
+      es: "Acceso de administración",
+    },
+    centres: { ca: "Centres", es: "Centros" },
+    professionals: { ca: "Professionals", es: "Profesionales" },
+    capProfessional: {
+      ca: "Encara no hi ha professionals registrats.",
+      es: "Todavía no hay profesionales registrados.",
+    },
+  },
   login: {
     assistentClinic: { ca: "Assistent clínic", es: "Asistente clínico" },
     iniciaSessio: { ca: "Inicia sessió", es: "Inicia sesión" },
