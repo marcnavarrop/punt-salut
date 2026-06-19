@@ -35,28 +35,42 @@ function desar(estat: Estat) {
   }
 }
 
+function migrarCentreIdPacient(pacient: Pacient): Pacient {
+  if (pacient.centreId) return pacient;
+  const referencia = PACIENTS_INICIALS.find((p) => p.id === pacient.id);
+  return {
+    ...pacient,
+    centreId: referencia?.centreId ?? "punt-salut-montseny",
+  };
+}
+
+function migrarCentreIdSessio(sessio: Sessio, pacients: Pacient[]): Sessio {
+  if (sessio.centreId) return sessio;
+  const pacient = pacients.find((p) => p.id === sessio.pacientId);
+  const referencia = SESSIONS_INICIALS.find((s) => s.id === sessio.id);
+  return {
+    ...sessio,
+    centreId:
+      pacient?.centreId ?? referencia?.centreId ?? "punt-salut-montseny",
+  };
+}
+
 function carregarEstatClient(): Estat {
   if (estatClient) return estatClient;
   try {
     const pacientsDesats = localStorage.getItem(CLAU_PACIENTS);
     const sessionsDesades = localStorage.getItem(CLAU_SESSIONS);
-    estatClient = {
-      pacients: pacientsDesats
-        ? JSON.parse(pacientsDesats)
-        : PACIENTS_INICIALS,
-      sessions: sessionsDesades
-        ? JSON.parse(sessionsDesades)
-        : SESSIONS_INICIALS,
-    };
+    const pacients: Pacient[] = (
+      pacientsDesats ? JSON.parse(pacientsDesats) : PACIENTS_INICIALS
+    ).map(migrarCentreIdPacient);
+    const sessions: Sessio[] = (
+      sessionsDesades ? JSON.parse(sessionsDesades) : SESSIONS_INICIALS
+    ).map((sessio: Sessio) => migrarCentreIdSessio(sessio, pacients));
+    estatClient = { pacients, sessions };
   } catch {
     estatClient = { pacients: PACIENTS_INICIALS, sessions: SESSIONS_INICIALS };
   }
-  if (
-    !localStorage.getItem(CLAU_PACIENTS) ||
-    !localStorage.getItem(CLAU_SESSIONS)
-  ) {
-    desar(estatClient);
-  }
+  desar(estatClient);
   return estatClient;
 }
 
