@@ -49,13 +49,13 @@ export function Sidebar() {
       {/* Fons fosc en obrir el menú a mòbil */}
       {obert && (
         <div
-          className="fixed inset-0 z-40 bg-black/40 sm:hidden"
+          className="fixed inset-0 z-40 bg-black/50 sm:hidden"
           onClick={() => setObert(false)}
         />
       )}
 
       <aside
-        className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80vw] flex-col border-r border-slate-200 bg-slate-50/60 transition-transform duration-200 sm:static sm:z-auto sm:w-60 sm:max-w-none sm:translate-x-0 ${
+        className={`fixed inset-y-0 left-0 z-50 flex w-72 max-w-[80vw] flex-col border-r border-slate-200 bg-white transition-transform duration-200 sm:static sm:z-auto sm:w-60 sm:max-w-none sm:translate-x-0 sm:bg-slate-50/60 ${
           obert ? "translate-x-0" : "-translate-x-full"
         }`}
       >
