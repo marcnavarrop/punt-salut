@@ -80,6 +80,11 @@ export default function LoginPage() {
                   autoComplete="current-password"
                   value={contrasenya}
                   onChange={(event) => setContrasenya(event.target.value)}
+                  onKeyDown={(event) => {
+                    if (event.key === "Enter") {
+                      event.currentTarget.form?.requestSubmit();
+                    }
+                  }}
                   placeholder="••••••"
                   className={ESTIL_CAMP}
                 />
