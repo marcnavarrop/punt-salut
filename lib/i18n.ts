@@ -108,6 +108,18 @@ export const TRADUCCIONS = {
     },
     dadesCentre: { ca: "Dades del centre", es: "Datos del centro" },
     nomCentre: { ca: "Nom del centre", es: "Nombre del centro" },
+    logoCentre: { ca: "Logo del centre", es: "Logo del centro" },
+    pujarLogo: { ca: "Pujar logo", es: "Subir logo" },
+    logoMassaGran: {
+      ca: "La imatge no pot superar els 2 MB.",
+      es: "La imagen no puede superar los 2 MB.",
+    },
+    colorCentre: { ca: "Color principal", es: "Color principal" },
+    horariObertura: { ca: "Horari d'obertura", es: "Horario de apertura" },
+    horariPlaceholder: {
+      ca: "Ex: Dilluns a Divendres, 9h-20h",
+      es: "Ej: Lunes a Viernes, 9h-20h",
+    },
     professionals: { ca: "Professionals", es: "Profesionales" },
     nouProfessional: { ca: "Nou professional", es: "Nuevo profesional" },
     editarProfessional: {

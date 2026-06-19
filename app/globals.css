@@ -5,6 +5,21 @@
   --font-sans: var(--font-inter);
 }
 
+:root {
+  /* Paleta brand per defecte (Punt Salut Montseny); sobreescrita en
+     temps real per TemaCentre segons el colorPrincipal del centre. */
+  --brand-50: #f0fdf4;
+  --brand-100: #dcfce7;
+  --brand-200: #bbf7d0;
+  --brand-300: #86efac;
+  --brand-400: #4ade80;
+  --brand-500: #22c55e;
+  --brand-600: #16a34a;
+  --brand-700: #15803d;
+  --brand-800: #166534;
+  --brand-900: #14532d;
+}
+
 @keyframes fade-in-up {
   from {
     opacity: 0;

@@ -15,6 +15,7 @@ export interface Centre {
   logo: string;
   logoUrl?: string;
   colorPrincipal: string;
+  horari?: string;
 }
 
 export const CENTRES_INICIALS: Centre[] = [

@@ -6,6 +6,7 @@ import { DadesProvider } from "@/lib/dades-context";
 import { ConfigProvider } from "@/lib/config-context";
 import { CentresProvider } from "@/lib/centres";
 import { IdiomaProvider } from "@/lib/i18n-context";
+import { TemaCentre } from "@/components/TemaCentre";
 import "./globals.css";
 
 const inter = Inter({
@@ -29,6 +30,7 @@ export default function RootLayout({
         <IdiomaProvider>
           <CentresProvider>
             <AuthProvider>
+              <TemaCentre />
               <AuthGuard>
                 <DadesProvider>
                   <ConfigProvider>{children}</ConfigProvider>

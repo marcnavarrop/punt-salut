@@ -2,7 +2,6 @@
 
 import { useState } from "react";
 import {
-  IconBuildingHospital,
   IconMail,
   IconPencil,
   IconPlus,
@@ -19,6 +18,7 @@ import { Sidebar } from "@/components/Sidebar";
 import { ModalConfirmacio } from "@/components/ModalConfirmacio";
 import type { Professional } from "@/types";
 import { FormulariProfessional } from "./FormulariProfessional";
+import { DadesCentre } from "./DadesCentre";
 
 export default function ConfiguracioPage() {
   const { t } = useIdioma();
@@ -29,9 +29,8 @@ export default function ConfiguracioPage() {
     actualitzarProfessional,
     eliminarProfessional,
   } = useConfig();
-  const { obtenirCentre, actualitzarNomCentre } = useCentres();
+  const { obtenirCentre } = useCentres();
 
-  const [nomCentreDraft, setNomCentreDraft] = useState<string | null>(null);
   const [mostrarFormulari, setMostrarFormulari] = useState(false);
   const [professionalEdicio, setProfessionalEdicio] = useState<
     Professional | undefined
@@ -45,7 +44,6 @@ export default function ConfiguracioPage() {
   }
 
   const centre = obtenirCentre(sessio.centreId);
-  const nomCentreEdicio = nomCentreDraft ?? centre?.nom ?? "";
   const professionalsCentre = professionals.filter(
     (professional) => professional.centreId === sessio.centreId
   );
@@ -69,40 +67,7 @@ export default function ConfiguracioPage() {
 
         <div className="flex-1 bg-slate-50/40 px-4 py-5 sm:px-7 sm:py-6">
           {/* Dades del centre */}
-          <div className="rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
-            <div className="mb-4 flex items-center gap-2">
-              <IconBuildingHospital className="h-4 w-4 text-brand-500" />
-              <h2 className="text-[14px] font-semibold tracking-tight text-slate-900">
-                {t("configuracio.dadesCentre")}
-              </h2>
-            </div>
-            <div className="max-w-md">
-              <label className="text-[12px] font-medium text-slate-500">
-                {t("configuracio.nomCentre")}
-              </label>
-              <div className="mt-1 flex flex-col gap-2 sm:flex-row">
-                <input
-                  type="text"
-                  value={nomCentreEdicio}
-                  onChange={(event) => setNomCentreDraft(event.target.value)}
-                  className="w-full rounded-lg border border-slate-200 bg-white px-3 py-2 text-[13px] text-slate-700 outline-none focus:border-brand-400 focus:ring-2 focus:ring-brand-500/15"
-                />
-                <button
-                  type="button"
-                  disabled={
-                    !nomCentreEdicio.trim() || nomCentreEdicio === centre?.nom
-                  }
-                  onClick={() => {
-                    actualitzarNomCentre(sessio.centreId, nomCentreEdicio.trim());
-                    setNomCentreDraft(null);
-                  }}
-                  className="shrink-0 rounded-lg bg-brand-600 px-3.5 py-2 text-[13px] font-medium text-white shadow-sm transition hover:bg-brand-700 disabled:cursor-not-allowed disabled:opacity-40"
-                >
-                  {t("comu.desar")}
-                </button>
-              </div>
-            </div>
-          </div>
+          {centre && <DadesCentre centre={centre} />}
 
           {/* Professionals */}
           <div className="mt-4 rounded-xl border border-slate-200 bg-white p-4 shadow-sm sm:p-5">
