@@ -88,6 +88,9 @@ interface CentresContextValor {
   centres: Centre[];
   obtenirCentre: (id: string) => Centre | undefined;
   actualitzarNomCentre: (id: string, nom: string) => void;
+  afegirCentre: (dades: Centre) => void;
+  actualitzarCentre: (id: string, dades: Omit<Centre, "id">) => void;
+  eliminarCentre: (id: string) => void;
 }
 
 const CentresContext = createContext<CentresContextValor | null>(null);
@@ -109,9 +112,30 @@ export function CentresProvider({ children }: { children: ReactNode }) {
     );
   }
 
+  function afegirCentre(dades: Centre) {
+    actualitzarCentres([...centres, dades]);
+  }
+
+  function actualitzarCentre(id: string, dades: Omit<Centre, "id">) {
+    actualitzarCentres(
+      centres.map((centre) => (centre.id === id ? { ...dades, id } : centre))
+    );
+  }
+
+  function eliminarCentre(id: string) {
+    actualitzarCentres(centres.filter((centre) => centre.id !== id));
+  }
+
   return (
     <CentresContext.Provider
-      value={{ centres, obtenirCentre, actualitzarNomCentre }}
+      value={{
+        centres,
+        obtenirCentre,
+        actualitzarNomCentre,
+        afegirCentre,
+        actualitzarCentre,
+        eliminarCentre,
+      }}
     >
       {children}
     </CentresContext.Provider>

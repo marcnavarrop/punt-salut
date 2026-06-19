@@ -9,53 +9,129 @@ import {
 } from "react";
 import { useRouter } from "next/navigation";
 import type { Professional } from "@/types";
+import { obtenirProfessionals } from "@/lib/config-context";
 
 const CLAU_SESSIO = "puntsalut.sessio";
+const CLAU_CREDENCIALS = "puntsalut.credencials";
 
-interface CredencialUsuari {
+export interface Credencial {
+  professionalId: string;
   usuari: string;
   contrasenya: string;
-  professional: Professional;
 }
 
-const USUARIS: CredencialUsuari[] = [
-  {
-    usuari: "marc",
-    contrasenya: "1234",
-    professional: {
-      id: "marc",
-      centreId: "punt-salut-montseny",
-      nom: "Marc",
-      cognoms: "Soler",
-      especialitat: "Fisioterapeuta",
-      email: "marc@puntsalutmontseny.cat",
-    },
-  },
-  {
-    usuari: "adria",
-    contrasenya: "1234",
-    professional: {
-      id: "adria",
-      centreId: "punt-salut-montseny",
-      nom: "Adrià",
-      cognoms: "Puig",
-      especialitat: "Fisioterapeuta",
-      email: "adria@puntsalutmontseny.cat",
-    },
-  },
-  {
-    usuari: "laura",
-    contrasenya: "1234",
-    professional: {
-      id: "laura",
-      centreId: "clinica-exemple",
-      nom: "Laura",
-      cognoms: "Ferrer",
-      especialitat: "Fisioterapeuta",
-      email: "laura@clinicaexemple.cat",
-    },
-  },
+const CREDENCIALS_INICIALS: Credencial[] = [
+  { professionalId: "marc", usuari: "marc", contrasenya: "1234" },
+  { professionalId: "adria", usuari: "adria", contrasenya: "1234" },
+  { professionalId: "laura", usuari: "laura", contrasenya: "1234" },
 ];
+
+const credencialsServidor: Credencial[] = CREDENCIALS_INICIALS;
+
+let credencialsClient: Credencial[] | null = null;
+const subscriptorsCredencials = new Set<() => void>();
+
+function desarCredencials(credencials: Credencial[]) {
+  try {
+    localStorage.setItem(CLAU_CREDENCIALS, JSON.stringify(credencials));
+  } catch {
+    // localStorage no disponible
+  }
+}
+
+function carregarCredencialsClient(): Credencial[] {
+  if (credencialsClient) return credencialsClient;
+  try {
+    const desades = localStorage.getItem(CLAU_CREDENCIALS);
+    credencialsClient = desades ? JSON.parse(desades) : CREDENCIALS_INICIALS;
+  } catch {
+    credencialsClient = CREDENCIALS_INICIALS;
+  }
+  if (!localStorage.getItem(CLAU_CREDENCIALS)) {
+    desarCredencials(credencialsClient!);
+  }
+  return credencialsClient!;
+}
+
+function actualitzarCredencials(noves: Credencial[]) {
+  credencialsClient = noves;
+  desarCredencials(noves);
+  subscriptorsCredencials.forEach((callback) => callback());
+}
+
+function subscriureCredencials(callback: () => void) {
+  subscriptorsCredencials.add(callback);
+  return () => subscriptorsCredencials.delete(callback);
+}
+
+function obtenirSnapshotCredencials(): Credencial[] {
+  return carregarCredencialsClient();
+}
+
+function obtenirSnapshotServidorCredencials(): Credencial[] {
+  return credencialsServidor;
+}
+
+interface CredencialsContextValor {
+  credencials: Credencial[];
+  afegirCredencial: (
+    professionalId: string,
+    usuari: string,
+    contrasenya: string
+  ) => void;
+  actualitzarCredencial: (
+    professionalId: string,
+    dades: { usuari?: string; contrasenya?: string }
+  ) => void;
+  eliminarCredencial: (professionalId: string) => void;
+}
+
+export function useCredencials(): CredencialsContextValor {
+  const credencials = useSyncExternalStore(
+    subscriureCredencials,
+    obtenirSnapshotCredencials,
+    obtenirSnapshotServidorCredencials
+  );
+
+  function afegirCredencial(
+    professionalId: string,
+    usuari: string,
+    contrasenya: string
+  ) {
+    actualitzarCredencials([
+      ...credencials,
+      { professionalId, usuari, contrasenya },
+    ]);
+  }
+
+  function actualitzarCredencial(
+    professionalId: string,
+    dades: { usuari?: string; contrasenya?: string }
+  ) {
+    actualitzarCredencials(
+      credencials.map((credencial) =>
+        credencial.professionalId === professionalId
+          ? { ...credencial, ...dades }
+          : credencial
+      )
+    );
+  }
+
+  function eliminarCredencial(professionalId: string) {
+    actualitzarCredencials(
+      credencials.filter(
+        (credencial) => credencial.professionalId !== professionalId
+      )
+    );
+  }
+
+  return {
+    credencials,
+    afegirCredencial,
+    actualitzarCredencial,
+    eliminarCredencial,
+  };
+}
 
 let sessioClient: Professional | null | undefined = undefined;
 const subscriptors = new Set<() => void>();
@@ -115,13 +191,17 @@ export function AuthProvider({ children }: { children: ReactNode }) {
   );
 
   function iniciarSessio(usuari: string, contrasenya: string): boolean {
-    const credencial = USUARIS.find(
-      (u) =>
-        u.usuari.toLowerCase() === usuari.trim().toLowerCase() &&
-        u.contrasenya === contrasenya
+    const credencial = carregarCredencialsClient().find(
+      (c) =>
+        c.usuari.toLowerCase() === usuari.trim().toLowerCase() &&
+        c.contrasenya === contrasenya
     );
     if (!credencial) return false;
-    actualitzarSessio(credencial.professional);
+    const professional = obtenirProfessionals().find(
+      (p) => p.id === credencial.professionalId
+    );
+    if (!professional) return false;
+    actualitzarSessio(professional);
     return true;
   }
 

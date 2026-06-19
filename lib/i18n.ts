@@ -141,9 +141,48 @@ export const TRADUCCIONS = {
     },
     centres: { ca: "Centres", es: "Centros" },
     professionals: { ca: "Professionals", es: "Profesionales" },
+    pacients: { ca: "pacients", es: "pacientes" },
     capProfessional: {
       ca: "Encara no hi ha professionals registrats.",
       es: "Todavía no hay profesionales registrados.",
+    },
+    nouCentre: { ca: "Nou centre", es: "Nuevo centro" },
+    editarCentre: { ca: "Editar centre", es: "Editar centro" },
+    crearCentre: { ca: "Crear centre", es: "Crear centro" },
+    slug: { ca: "Identificador (slug)", es: "Identificador (slug)" },
+    slugAjuda: {
+      ca: "Només minúscules, números i guions. No es pot canviar un cop creat.",
+      es: "Solo minúsculas, números y guiones. No se puede cambiar una vez creado.",
+    },
+    slugDuplicat: {
+      ca: "Ja existeix un centre amb aquest identificador.",
+      es: "Ya existe un centro con ese identificador.",
+    },
+    colorPrincipal: { ca: "Color principal", es: "Color principal" },
+    logoUrlOpcional: {
+      ca: "URL del logo (opcional)",
+      es: "URL del logo (opcional)",
+    },
+    nouProfessionalCentre: {
+      ca: "Nou professional",
+      es: "Nuevo profesional",
+    },
+    contrasenya: { ca: "Contrasenya", es: "Contraseña" },
+    contrasenyaNovaOpcional: {
+      ca: "Contrasenya nova (deixa en blanc per no canviar-la)",
+      es: "Contraseña nueva (déjala en blanco para no cambiarla)",
+    },
+    confirmarEliminarCentreTitol: {
+      ca: "Eliminar centre",
+      es: "Eliminar centro",
+    },
+    confirmarEliminarCentreMissatge: {
+      ca: "Estàs segur que vols eliminar {nom}? Té {pacients} pacients i {professionals} professionals associats que quedaran sense centre. Aquesta acció no es pot desfer.",
+      es: "¿Seguro que quieres eliminar {nom}? Tiene {pacients} pacientes y {professionals} profesionales asociados que quedarán sin centro. Esta acción no se puede deshacer.",
+    },
+    confirmarEliminarProfessionalMissatge: {
+      ca: "Estàs segur que vols eliminar {nom}? També perdrà l'accés per iniciar sessió. Aquesta acció no es pot desfer.",
+      es: "¿Seguro que quieres eliminar a {nom}? También perderá el acceso para iniciar sesión. Esta acción no se puede deshacer.",
     },
   },
   login: {

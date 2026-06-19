@@ -209,3 +209,15 @@ export function useDades(): DadesContextValor {
   }
   return context;
 }
+
+/**
+ * Dades sense filtrar per centre, per a vistes globals com l'admin
+ * (que no té cap professional amb sessió iniciada).
+ */
+export function useTotesDades(): Estat {
+  return useSyncExternalStore(
+    subscriure,
+    obtenirSnapshot,
+    obtenirSnapshotServidor
+  );
+}

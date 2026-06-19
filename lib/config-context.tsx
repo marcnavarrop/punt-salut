@@ -102,9 +102,17 @@ function obtenirSnapshotServidor(): Config {
   return configServidor;
 }
 
+/**
+ * Lectura directa (no reactiva) dels professionals actuals, per a ús fora
+ * de components React (p. ex. comprovar credencials en iniciar sessió).
+ */
+export function obtenirProfessionals(): Professional[] {
+  return carregarConfigClient().professionals;
+}
+
 interface ConfigContextValor {
   professionals: Professional[];
-  afegirProfessional: (dades: Omit<Professional, "id">) => void;
+  afegirProfessional: (dades: Omit<Professional, "id">) => Professional;
   actualitzarProfessional: (id: string, dades: Omit<Professional, "id">) => void;
   eliminarProfessional: (id: string) => void;
 }
@@ -118,12 +126,13 @@ export function ConfigProvider({ children }: { children: ReactNode }) {
     obtenirSnapshotServidor
   );
 
-  function afegirProfessional(dades: Omit<Professional, "id">) {
+  function afegirProfessional(dades: Omit<Professional, "id">): Professional {
     const nou: Professional = { ...dades, id: crypto.randomUUID() };
     actualitzarConfig({
       ...config,
       professionals: [...config.professionals, nou],
     });
+    return nou;
   }
 
   function actualitzarProfessional(id: string, dades: Omit<Professional, "id">) {
