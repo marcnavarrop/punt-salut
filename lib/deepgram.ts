@@ -37,6 +37,7 @@ const MIME_TYPES_PREFERITS = [
   "audio/webm;codecs=opus",
   "audio/webm",
   "audio/ogg;codecs=opus",
+  "audio/mp4", // Safari
 ];
 
 /**
@@ -74,11 +75,15 @@ export async function iniciarTranscripcio(
   let accessToken: string;
   try {
     const res = await fetch("/api/deepgram", { method: "POST" });
-    if (!res.ok) throw new Error(`HTTP ${res.status}`);
+    if (!res.ok) {
+      const cos = await res.text().catch(() => "");
+      throw new Error(`El servidor de tokens ha respost ${res.status}. ${cos}`);
+    }
     const dades = (await res.json()) as { access_token?: string };
-    if (!dades.access_token) throw new Error("Resposta sense token");
+    if (!dades.access_token) throw new Error("Resposta del servidor sense token");
     accessToken = dades.access_token;
   } catch (error) {
+    console.error("[Deepgram] No s'ha pogut obtenir el token temporal:", error);
     stream.getTracks().forEach((track) => track.stop());
     onError({ tipus: "connexio", detall: error });
     throw error;
@@ -117,11 +122,22 @@ export async function iniciarTranscripcio(
 
   ws.onopen = () => {
     if (aturat) return;
-    recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    try {
+      recorder = new MediaRecorder(stream, mimeType ? { mimeType } : undefined);
+    } catch (error) {
+      console.error("[Deepgram] No s'ha pogut iniciar MediaRecorder:", error);
+      onError({ tipus: "sense-suport", detall: error });
+      aturar();
+      return;
+    }
     recorder.ondataavailable = (event) => {
       if (event.data.size > 0 && ws.readyState === WebSocket.OPEN) {
         ws.send(event.data);
       }
+    };
+    recorder.onerror = (event) => {
+      console.error("[Deepgram] Error de MediaRecorder:", event);
+      if (!aturat) onError({ tipus: "desconegut", detall: event });
     };
     // Enviem chunks cada 250 ms per a una latència baixa.
     recorder.start(250);
@@ -146,8 +162,20 @@ export async function iniciarTranscripcio(
     else onParcial(text);
   };
 
-  ws.onerror = () => {
-    if (!aturat) onError({ tipus: "connexio" });
+  ws.onerror = (event) => {
+    console.error("[Deepgram] Error del WebSocket:", event);
+    if (!aturat) onError({ tipus: "connexio", detall: event });
+  };
+
+  ws.onclose = (event) => {
+    // Un tancament net (1000) després d'aturar és normal; un de no net amb la
+    // sessió encara activa indica un problema de connexió.
+    if (!aturat && !event.wasClean) {
+      console.error(
+        `[Deepgram] WebSocket tancat inesperadament (codi ${event.code}): ${event.reason || "sense motiu"}`
+      );
+      onError({ tipus: "connexio", detall: event });
+    }
   };
 
   function aturar() {
