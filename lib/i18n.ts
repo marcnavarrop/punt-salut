@@ -179,6 +179,20 @@ export const TRADUCCIONS = {
       ca: "Encara no hi ha freqüències habituals.",
       es: "Todavía no hay frecuencias habituales.",
     },
+    preferencies: { ca: "Preferències", es: "Preferencias" },
+    idiomaPerDefecte: {
+      ca: "Idioma per defecte del centre",
+      es: "Idioma por defecto del centro",
+    },
+    idiomaPerDefecteAjuda: {
+      ca: "S'aplica als professionals que encara no han triat idioma.",
+      es: "Se aplica a los profesionales que aún no han elegido idioma.",
+    },
+    formatData: { ca: "Format de data", es: "Formato de fecha" },
+    formatDataAjuda: {
+      ca: "Com es mostren les dates a tota l'aplicació.",
+      es: "Cómo se muestran las fechas en toda la aplicación.",
+    },
     professionals: { ca: "Professionals", es: "Profesionales" },
     nouProfessional: { ca: "Nou professional", es: "Nuevo profesional" },
     editarProfessional: {

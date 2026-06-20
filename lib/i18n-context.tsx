@@ -39,6 +39,27 @@ function actualitzarIdioma(idioma: Idioma) {
   subscriptors.forEach((callback) => callback());
 }
 
+/** True si l'usuari ha triat explícitament un idioma (toggle de la sidebar). */
+function teIdiomaManual(): boolean {
+  try {
+    return localStorage.getItem(CLAU_IDIOMA) !== null;
+  } catch {
+    return false;
+  }
+}
+
+/**
+ * Aplica l'idioma per defecte del centre, però només si l'usuari no n'ha
+ * triat cap manualment. No es persisteix: és un valor per defecte, no una
+ * elecció, de manera que un toggle posterior sempre té prioritat.
+ */
+export function establirIdiomaPerDefecte(idioma: Idioma) {
+  if (teIdiomaManual()) return;
+  if (idiomaClient === idioma) return;
+  idiomaClient = idioma;
+  subscriptors.forEach((callback) => callback());
+}
+
 function subscriure(callback: () => void) {
   subscriptors.add(callback);
   return () => subscriptors.delete(callback);

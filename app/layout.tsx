@@ -7,6 +7,7 @@ import { ConfigProvider } from "@/lib/config-context";
 import { CentresProvider } from "@/lib/centres";
 import { IdiomaProvider } from "@/lib/i18n-context";
 import { TemaCentre } from "@/components/TemaCentre";
+import { AplicaPreferencies } from "@/components/AplicaPreferencies";
 import "./globals.css";
 
 const inter = Inter({
@@ -31,6 +32,7 @@ export default function RootLayout({
           <CentresProvider>
             <AuthProvider>
               <TemaCentre />
+              <AplicaPreferencies />
               <AuthGuard>
                 <DadesProvider>
                   <ConfigProvider>{children}</ConfigProvider>

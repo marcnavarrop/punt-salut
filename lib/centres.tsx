@@ -6,6 +6,8 @@ import {
   useSyncExternalStore,
   type ReactNode,
 } from "react";
+import type { Idioma } from "@/lib/i18n";
+import type { FormatData } from "@/lib/data-utils";
 
 const CLAU_CENTRES = "voltamed.centres";
 
@@ -16,6 +18,8 @@ export interface Centre {
   logoUrl?: string;
   colorPrincipal: string;
   horari?: string;
+  idiomaPerDefecte?: Idioma;
+  formatData?: FormatData;
 }
 
 export const CENTRES_INICIALS: Centre[] = [
