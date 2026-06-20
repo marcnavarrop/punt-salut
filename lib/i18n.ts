@@ -300,6 +300,14 @@ export const TRADUCCIONS = {
       es: "La transcripción aparecerá aquí cuando empiece la grabación...",
     },
     connectant: { ca: "Connectant…", es: "Conectando…" },
+    idiomaTranscripcio: {
+      ca: "Idioma de la transcripció",
+      es: "Idioma de la transcripción",
+    },
+    avisCanviIdioma: {
+      ca: "Pausa la gravació per canviar l'idioma de la transcripció.",
+      es: "Pausa la grabación para cambiar el idioma de la transcripción.",
+    },
     errorMicrofon: {
       ca: "No s'ha pogut accedir al micròfon. Comprova que has donat permís al navegador.",
       es: "No se ha podido acceder al micrófono. Comprueba que has dado permiso al navegador.",

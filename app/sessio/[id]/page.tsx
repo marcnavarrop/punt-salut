@@ -24,13 +24,17 @@ import { SEVERITAT_ESTILS, SEVERITAT_ICONES, etiquetaDeteccio } from "@/lib/etiq
 import { useRequereSessio } from "@/lib/auth-context";
 import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
+import { useCentres } from "@/lib/centres";
 import { dataAvui } from "@/lib/data-utils";
 import { useIdioma } from "@/lib/i18n-context";
+import { IDIOMES, type Idioma } from "@/lib/i18n";
 import {
   iniciarTranscripcio,
   type ControladorTranscripcio,
   type TipusErrorTranscripcio,
 } from "@/lib/deepgram";
+
+const NOM_IDIOMA: Record<Idioma, string> = { ca: "CA", es: "ES" };
 
 const SEGONS_PER_ANALISI = 15;
 const INTERVAL_DETECCIO_MS = 500;
@@ -58,6 +62,9 @@ export default function SessioPage({
   const { idioma, t } = useIdioma();
   const { sessio, carregat } = useRequereSessio();
   const { obtenirPacient, obtenirSessionsPacient, afegirSessio } = useDades();
+  const { obtenirCentre } = useCentres();
+
+  const centre = sessio ? obtenirCentre(sessio.centreId) : undefined;
 
   const pacient = obtenirPacient(id);
   const sessionsExistents = obtenirSessionsPacient(id);
@@ -81,7 +88,30 @@ export default function SessioPage({
     generarPreguntesSeguentSessio()
   );
 
+  // Idioma de transcripció d'aquesta sessió. Parteix de l'idioma actiu i,
+  // un cop carregat el centre, agafa el seu idioma per defecte; l'usuari el
+  // pot canviar manualment per a la sessió concreta.
+  const [idiomaTranscripcio, setIdiomaTranscripcio] = useState<Idioma>(idioma);
+  const [avisIdioma, setAvisIdioma] = useState(false);
+  const idiomaInicialitzat = useRef(false);
+
   const controladorRef = useRef<ControladorTranscripcio | null>(null);
+
+  useEffect(() => {
+    if (idiomaInicialitzat.current || !centre) return;
+    idiomaInicialitzat.current = true;
+    setIdiomaTranscripcio(centre.idiomaPerDefecte ?? idioma);
+  }, [centre, idioma]);
+
+  function gestionarCanviIdioma(nou: Idioma) {
+    if (nou === idiomaTranscripcio) return;
+    if (isRecording || connectant) {
+      setAvisIdioma(true);
+      return;
+    }
+    setAvisIdioma(false);
+    setIdiomaTranscripcio(nou);
+  }
 
   const data = new Date().toLocaleDateString(idioma === "es" ? "es-ES" : "ca-ES", {
     day: "numeric",
@@ -131,10 +161,11 @@ export default function SessioPage({
 
   async function comencarTranscripcio() {
     setErrorTranscripcio(null);
+    setAvisIdioma(false);
     setConnectant(true);
     try {
       const controlador = await iniciarTranscripcio({
-        idioma: idioma === "es" ? "es" : "ca",
+        idioma: idiomaTranscripcio,
         onParcial: (text) => setTranscripcioParcial(text),
         onFinal: (text) => {
           setTranscripcioFinal((prev) => (prev ? `${prev} ${text}` : text));
@@ -260,28 +291,63 @@ export default function SessioPage({
                 {formatTemps(segons)}
               </span>
             </div>
-            <button
-              type="button"
-              onClick={alternarGravacio}
-              disabled={connectant}
-              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2 ${
-                isRecording
-                  ? "bg-slate-600 hover:bg-slate-700"
-                  : "bg-brand-600 hover:bg-brand-700"
-              }`}
-            >
-              {isRecording ? (
-                <IconPlayerPause className="h-4 w-4" />
-              ) : (
-                <IconPlayerPlay className="h-4 w-4" />
-              )}
-              {connectant
-                ? t("sessio.connectant")
-                : isRecording
-                  ? t("sessio.pausarGravacio")
-                  : t("sessio.iniciarGravacio")}
-            </button>
+            <div className="flex w-full flex-col gap-2 sm:w-auto sm:flex-row sm:items-center">
+              {/* Selector d'idioma de transcripció d'aquesta sessió */}
+              <div
+                className="inline-flex items-center justify-center gap-1 rounded-lg border border-slate-200 bg-slate-50 p-1"
+                role="group"
+                aria-label={t("sessio.idiomaTranscripcio")}
+              >
+                {IDIOMES.map((opcio) => {
+                  const actiu = idiomaTranscripcio === opcio;
+                  return (
+                    <button
+                      key={opcio}
+                      type="button"
+                      onClick={() => gestionarCanviIdioma(opcio)}
+                      aria-pressed={actiu}
+                      title={t("sessio.idiomaTranscripcio")}
+                      className={`rounded-md px-2.5 py-1 text-[12px] font-semibold uppercase tracking-wide transition ${
+                        actiu
+                          ? "bg-brand-600 text-white shadow-sm"
+                          : "text-slate-500 hover:text-slate-700"
+                      } ${isRecording || connectant ? "cursor-not-allowed opacity-70" : ""}`}
+                    >
+                      {NOM_IDIOMA[opcio]}
+                    </button>
+                  );
+                })}
+              </div>
+              <button
+                type="button"
+                onClick={alternarGravacio}
+                disabled={connectant}
+                className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2 ${
+                  isRecording
+                    ? "bg-slate-600 hover:bg-slate-700"
+                    : "bg-brand-600 hover:bg-brand-700"
+                }`}
+              >
+                {isRecording ? (
+                  <IconPlayerPause className="h-4 w-4" />
+                ) : (
+                  <IconPlayerPlay className="h-4 w-4" />
+                )}
+                {connectant
+                  ? t("sessio.connectant")
+                  : isRecording
+                    ? t("sessio.pausarGravacio")
+                    : t("sessio.iniciarGravacio")}
+              </button>
+            </div>
           </div>
+
+          {avisIdioma && (
+            <p className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-[13px] font-medium text-amber-800 ring-1 ring-amber-100">
+              <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              {t("sessio.avisCanviIdioma")}
+            </p>
+          )}
 
           {errorTranscripcio && (
             <p className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-[13px] font-medium text-amber-800 ring-1 ring-amber-100">
