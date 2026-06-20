@@ -299,6 +299,19 @@ export const TRADUCCIONS = {
       ca: "La transcripció apareixerà aquí quan comenci la gravació...",
       es: "La transcripción aparecerá aquí cuando empiece la grabación...",
     },
+    connectant: { ca: "Connectant…", es: "Conectando…" },
+    errorMicrofon: {
+      ca: "No s'ha pogut accedir al micròfon. Comprova que has donat permís al navegador.",
+      es: "No se ha podido acceder al micrófono. Comprueba que has dado permiso al navegador.",
+    },
+    errorSenseSuport: {
+      ca: "Aquest navegador no permet la captura d'àudio. Prova amb Chrome o Safari actualitzat.",
+      es: "Este navegador no permite la captura de audio. Prueba con Chrome o Safari actualizado.",
+    },
+    errorConnexioTranscripcio: {
+      ca: "No s'ha pogut connectar amb el servei de transcripció. Pots continuar la sessió i tornar-ho a provar.",
+      es: "No se ha podido conectar con el servicio de transcripción. Puedes continuar la sesión y volver a intentarlo.",
+    },
     analisiIntelligent: {
       ca: "Anàlisi intel·ligent",
       es: "Análisis inteligente",

@@ -1,9 +1,10 @@
 "use client";
 
-import { use, useEffect, useState } from "react";
+import { use, useEffect, useRef, useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import {
+  IconAlertTriangle,
   IconArrowLeft,
   IconBulb,
   IconDeviceFloppy,
@@ -25,21 +26,21 @@ import { CarregantSessio } from "@/lib/auth-guard";
 import { useDades } from "@/lib/dades-context";
 import { dataAvui } from "@/lib/data-utils";
 import { useIdioma } from "@/lib/i18n-context";
+import {
+  iniciarTranscripcio,
+  type ControladorTranscripcio,
+  type TipusErrorTranscripcio,
+} from "@/lib/deepgram";
 
 const SEGONS_PER_ANALISI = 15;
-const INTERVAL_TRANSCRIPCIO_MS = 5000;
 const INTERVAL_DETECCIO_MS = 500;
 
-const TRANSCRIPCIO_CHUNKS = [
-  "Fisioterapeuta: Bon dia, Maria. Com t'has trobat aquesta setmana?",
-  "Pacient: Bastant millor, la veritat. El dolor a la zona lumbar ha baixat una mica.",
-  "Fisioterapeuta: Genial. En una escala del 0 al 10, com puntuaries el dolor avui?",
-  "Pacient: Diria que un 3, abans estava sobre un 5.",
-  "Fisioterapeuta: Molt bé. I com et trobes a l'hora de fer els exercicis de casa?",
-  "Pacient: Els faig cada dia, encara em fa una mica de respecte la flexió completa.",
-  "Fisioterapeuta: Anem a treballar avui la mobilitat lumbar amb exercicis de control motor.",
-  "Pacient: D'acord, perfecte.",
-];
+const CLAU_ERROR_TRANSCRIPCIO: Record<TipusErrorTranscripcio, string> = {
+  "permis-microfon": "sessio.errorMicrofon",
+  "sense-suport": "sessio.errorSenseSuport",
+  connexio: "sessio.errorConnexioTranscripcio",
+  desconegut: "sessio.errorConnexioTranscripcio",
+};
 
 function formatTemps(totalSegons: number): string {
   const minuts = Math.floor(totalSegons / 60);
@@ -66,8 +67,13 @@ export default function SessioPage({
     : t("sessio.pacientPerDefecte");
 
   const [isRecording, setIsRecording] = useState(false);
+  const [connectant, setConnectant] = useState(false);
   const [segons, setSegons] = useState(0);
-  const [transcripcioIndex, setTranscripcioIndex] = useState(0);
+  const [transcripcioFinal, setTranscripcioFinal] = useState("");
+  const [transcripcioParcial, setTranscripcioParcial] = useState("");
+  const [errorTranscripcio, setErrorTranscripcio] = useState<string | null>(
+    null
+  );
   const [analisi, setAnalisi] = useState<AnalisiTranscripcio | null>(null);
   const [deteccionsVisibles, setDeteccionsVisibles] = useState(0);
   const [mostrarModal, setMostrarModal] = useState(false);
@@ -75,7 +81,9 @@ export default function SessioPage({
     generarPreguntesSeguentSessio()
   );
 
-  const data = new Date().toLocaleDateString("ca-ES", {
+  const controladorRef = useRef<ControladorTranscripcio | null>(null);
+
+  const data = new Date().toLocaleDateString(idioma === "es" ? "es-ES" : "ca-ES", {
     day: "numeric",
     month: "long",
     year: "numeric",
@@ -88,28 +96,16 @@ export default function SessioPage({
     return () => clearInterval(interval);
   }, [isRecording]);
 
-  // Transcripció progressiva, alternant professional i pacient
-  useEffect(() => {
-    if (!isRecording) return;
-    if (transcripcioIndex >= TRANSCRIPCIO_CHUNKS.length) return;
-    const timeout = setTimeout(
-      () => setTranscripcioIndex((i) => i + 1),
-      INTERVAL_TRANSCRIPCIO_MS
-    );
-    return () => clearTimeout(timeout);
-  }, [isRecording, transcripcioIndex]);
-
-  // Anàlisi de la IA als 15 segons de gravació
+  // Anàlisi de la IA als 15 segons de gravació (sobre el text real)
   useEffect(() => {
     if (!isRecording) return;
     if (analisi) return;
     if (segons < SEGONS_PER_ANALISI) return;
     const timeout = setTimeout(() => {
-      const text = TRANSCRIPCIO_CHUNKS.slice(0, transcripcioIndex).join(" ");
-      setAnalisi(analitzarTranscripcio(text));
+      setAnalisi(analitzarTranscripcio(transcripcioFinal));
     }, 0);
     return () => clearTimeout(timeout);
-  }, [isRecording, analisi, segons, transcripcioIndex]);
+  }, [isRecording, analisi, segons, transcripcioFinal]);
 
   // Aparició progressiva de les deteccions, amb animació
   useEffect(() => {
@@ -122,11 +118,61 @@ export default function SessioPage({
     return () => clearTimeout(timeout);
   }, [analisi, deteccionsVisibles]);
 
+  // Atura el micròfon i la connexió si es desmunta la pàgina
+  useEffect(() => {
+    return () => controladorRef.current?.aturar();
+  }, []);
+
+  function aturarTranscripcio() {
+    controladorRef.current?.aturar();
+    controladorRef.current = null;
+    setTranscripcioParcial("");
+  }
+
+  async function comencarTranscripcio() {
+    setErrorTranscripcio(null);
+    setConnectant(true);
+    try {
+      const controlador = await iniciarTranscripcio({
+        idioma: idioma === "es" ? "es" : "ca",
+        onParcial: (text) => setTranscripcioParcial(text),
+        onFinal: (text) => {
+          setTranscripcioFinal((prev) => (prev ? `${prev} ${text}` : text));
+          setTranscripcioParcial("");
+        },
+        onError: (error) => {
+          setErrorTranscripcio(t(CLAU_ERROR_TRANSCRIPCIO[error.tipus]));
+          setIsRecording(false);
+          setConnectant(false);
+          controladorRef.current = null;
+        },
+        onObert: () => {
+          setConnectant(false);
+          setIsRecording(true);
+        },
+      });
+      controladorRef.current = controlador;
+    } catch {
+      // onError ja ha informat la UI; no trenquem la sessió.
+      setConnectant(false);
+    }
+  }
+
+  function alternarGravacio() {
+    if (connectant) return;
+    if (isRecording) {
+      aturarTranscripcio();
+      setIsRecording(false);
+    } else {
+      void comencarTranscripcio();
+    }
+  }
+
   function gestionarFinalitzar() {
+    aturarTranscripcio();
     setIsRecording(false);
     if (!analisi) {
-      const text = TRANSCRIPCIO_CHUNKS.slice(0, transcripcioIndex).join(" ");
-      const resultat = analitzarTranscripcio(text);
+      const resultat = analitzarTranscripcio(transcripcioFinal);
       setAnalisi(resultat);
       setDeteccionsVisibles(resultat.deteccionsIA.length);
     }
@@ -143,7 +189,7 @@ export default function SessioPage({
       previewResum: analisi.resumEstructurat.dolor,
       evolucio: analisi.evolucio,
       eva: analisi.eva,
-      transcripcio: TRANSCRIPCIO_CHUNKS.slice(0, transcripcioIndex).join("\n"),
+      transcripcio: transcripcioFinal,
       resumEstructurat: analisi.resumEstructurat,
       deteccionsIA: analisi.deteccionsIA,
     });
@@ -216,8 +262,9 @@ export default function SessioPage({
             </div>
             <button
               type="button"
-              onClick={() => setIsRecording((r) => !r)}
-              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-sm transition sm:w-auto sm:py-2 ${
+              onClick={alternarGravacio}
+              disabled={connectant}
+              className={`inline-flex w-full items-center justify-center gap-1.5 rounded-lg px-4 py-3 text-sm font-medium text-white shadow-sm transition disabled:cursor-not-allowed disabled:opacity-60 sm:w-auto sm:py-2 ${
                 isRecording
                   ? "bg-slate-600 hover:bg-slate-700"
                   : "bg-brand-600 hover:bg-brand-700"
@@ -228,27 +275,40 @@ export default function SessioPage({
               ) : (
                 <IconPlayerPlay className="h-4 w-4" />
               )}
-              {isRecording ? t("sessio.pausarGravacio") : t("sessio.iniciarGravacio")}
+              {connectant
+                ? t("sessio.connectant")
+                : isRecording
+                  ? t("sessio.pausarGravacio")
+                  : t("sessio.iniciarGravacio")}
             </button>
           </div>
+
+          {errorTranscripcio && (
+            <p className="mt-4 flex items-start gap-2 rounded-lg bg-amber-50 px-3 py-2 text-[13px] font-medium text-amber-800 ring-1 ring-amber-100">
+              <IconAlertTriangle className="mt-0.5 h-4 w-4 shrink-0" />
+              {errorTranscripcio}
+            </p>
+          )}
 
           <div className="mt-6">
             <h2 className="text-sm font-semibold tracking-tight text-slate-900">
               {t("sessio.transcripcioTempsReal")}
             </h2>
-            <div className="mt-2 h-64 space-y-2 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm text-slate-700 sm:h-96">
-              {transcripcioIndex === 0 ? (
+            <div className="mt-2 h-64 overflow-y-auto rounded-lg border border-slate-200 bg-slate-50 p-4 text-sm leading-relaxed text-slate-700 sm:h-96">
+              {!transcripcioFinal && !transcripcioParcial ? (
                 <p className="text-slate-400">
                   {t("sessio.transcripcioEspera")}
                 </p>
               ) : (
-                TRANSCRIPCIO_CHUNKS.slice(0, transcripcioIndex).map(
-                  (chunk, index) => (
-                    <p key={index} className="fade-in-up">
-                      {chunk}
-                    </p>
-                  )
-                )
+                <p className="whitespace-pre-wrap">
+                  {transcripcioFinal}
+                  {transcripcioParcial && (
+                    <span className="text-slate-400">
+                      {transcripcioFinal ? " " : ""}
+                      {transcripcioParcial}
+                    </span>
+                  )}
+                </p>
               )}
             </div>
           </div>
